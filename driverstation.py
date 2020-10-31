@@ -37,6 +37,11 @@ Initially the AButton is up
 Probably we need an object that contains all of the state
 for the joystick?
 """
+# A, B, X, Y, L bumpter, R bumber, back, start, big shinny button
+buttons = [0,0,0,0,0,0,0,0]
+
+# LHand Y, LHand X, L trigger, RHand X, RHand Y, R trigger
+axis_values = [0,0,0,0,0,0]
 
 #  AButton is button[0]
 loopQuit = False
@@ -53,6 +58,20 @@ while loopQuit == False:
 
     Look at the documentation for NetworkTables for some ideas.
          https://robotpy.readthedocs.io/projects/pynetworktables/en/latest/examples.html
+    """
+
+    for i in range(len(buttons)):
+        buttons[i] = joystick.get_button(i)
+        
+
+    for j in range(len(axis_values)):
+        axis_values[j] = joystick.get_axis(j)
+    
+    xbc_nt.putNumberArray("Buttons", buttons)
+    xbc_nt.putNumberArray("Axis", axis_values)
+
+
+
     """
     AButton = joystick.get_button(0)           #  get button from joystick
     xbc_nt.putBoolean('Button0', AButton)      #  publish to NetworkTables
@@ -80,7 +99,7 @@ while loopQuit == False:
         # dominates events when used
         if event.type == pygame.JOYAXISMOTION:
             pass
-
+    """
     time.sleep(0.5)
 
 pygame.quit()

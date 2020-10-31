@@ -2,10 +2,28 @@
 from networktables import NetworkTables
 import RPi.GPIO as GPIO
 from PCA9685 import PCA9685
-
+import enum
 
 
 class XboxController():
+
+
+    class Hand(enum.IntEnum):
+
+        kLeft = 0
+        kRight = 1
+    
+    class Button(enum.IntEnum):
+        kBumperLeft = 4
+        kBumperRight = 5
+        kA = 0
+        kB = 1
+        kX = 2
+        kY = 3
+        kBack = 6
+        kStart = 7
+        kBig = 8
+
     def __init__(self, id):
         self.id = id
         self.nt = NetworkTables.getTable("DriverStation/XboxController{}".format(id))
@@ -16,70 +34,203 @@ class XboxController():
         # get and save button state
         
         # A-0,B-1,X-2,Y-3
-        self.lastButtonValues = []
-        self.lastButtonValues.append(self.nt.getBoolean("Button0", False))
-        self.lastButtonValues.append(self.nt.getBoolean("Button1", False))
-        self.lastButtonValues.append(self.nt.getBoolean("Button2", False))
-        self.lastButtonValues.append(self.nt.getBoolean("Button3", False))
+
+        # A, B, X, Y, L bumpter, R bumber, back, start, big shinny button
+        self.buttons = [0,0,0,0,0,0,0,0]
+
+        # LHand Y, LHand X, L trigger, RHand X, RHand Y, R trigger
+        self.axis_values = [0,0,0,0,0,0]
 
 
-    def getButton(self, v) -> bool:
-        newB = self.nt.getBoolean("Button" + str(v), False)
-        self.lastButtonValues[v] = newB
+        for i in range(len(self.buttons)):
+            self.buttons[i] = self.nt.getNumberArray("Buttons", 0)[i]
+        
+        for j in range(len(self.axis_values)):
+            self.axis_values[j] = self.nt.getNumberArray("Axis", 0)[j]
+
+
+    def getRawButton(self, v) -> bool:
+        newB = self.nt.getNumberArray("Buttons", 0)[v]
+        self.buttons[v] = newB
         return newB
 
-    def getButtonPressed(self, v) -> bool:
-        newB = self.nt.getBoolean("Button" + str(v), False)
-        pressed = newB and not self.lastButtonValues[v]
-        self.lastButtonValues[v] = newB
+    def getRawButtonPressed(self, v) -> bool:
+        newB = self.nt.getNumberArray("Buttons", 0)[v]
+        pressed = newB and not self.buttons[v]
+        self.buttons[v] = newB
         return pressed
 
-    def getButtonReleased(self, v) -> bool:
-        newB = self.nt.getBoolean("Button" + str(v), False)
-        released =  not newB and self.lastButtonValues[v]
-        self.lastButtonValues[v] = newB
+    def getRawButtonReleased(self, v) -> bool:
+        newB = self.nt.getNumberArray("Buttons", 0)[v]
+        released =  not newB and self.buttons[v]
+        self.buttons[v] = newB
         return released
 
     def getX(self, hand):
-        pass
+        """Get the x position of the controller.
 
+        :param hand: which hand, left or right
 
-    #TODO: put these values in a variable
-    def getAButton(self):
-        return self.getButton(0)
+        :returns: the x position
+        """
+        if hand == self.Hand.kLeft:
+            self.axis_values[1] = self.nt.getNumberArray("Axis", 0)[1]
+            return self.axis_values[1]
+        else:
+            self.axis_values[4] = self.nt.getNumberArray("Axis", 0)[4]
+            return self.axis_values[4]
 
-    def getAButtonPressed(self):
-        return self.getButtonPressed(0)
+    def getY(self, hand):
+        """Get the y position of the controller.
 
-    def getAButtonReleased(self):
-        return self.getButtonReleased(0)
+        :param hand: which hand, left or right
 
-    def getBButton(self):
-        return self.getButton(1)
+        :returns: the y position
+        """
+        if hand == self.Hand.kLeft:
+            self.axis_values[0] = self.nt.getNumberArray("Axis", 0)[0]
+            return self.axis_values[0]
+        else:
+            self.axis_values[3] = self.nt.getNumberArray("Axis", 0)[3]
+            return self.axis_values[3]
 
-    def getBButtonPressed(self):
-        return self.getButtonPressed(1)
+    def getBumper(self, hand) -> bool:
+        """Read the values of the bumper button on the controller.
+        :param hand: Side of controller whose value should be returned.
+        :return: The state of the button
+        """
+        if hand == GenericHID.Hand.kLeft:
+            return self.getRawButton(self.Button.kBumperLeft)
+        else:
+            return self.getRawButton(self.Button.kBumperRight)
 
-    def getBButtonReleased(self):
-        return self.getButtonReleased(1)
+    def getBumperPressed(self, hand):
+        """Whether the bumper was pressed since the last check.
+        :param hand: Side of controller whose value should be returned.
+        :returns: Whether the button was pressed since the last check.
+        """
+        if hand == self.Hand.kLeft:
+            return self.getRawButtonPressed(self.Button.kBumperLeft)
+        else:
+            return self.getRawButtonPressed(self.Button.kBumperRight)
+    
+    def getBumperReleased(self, hand) -> bool:
+        """Whether the bumper was released since the last check.
+        :param hand: Side of controller whose value should be returned.
+        :returns: Whether the button was released since the last check.
+        """
+        if hand = self.Hand.kLeft:
+            return self.getRawButtonReleased(self.Button.kBumperLeft)
+        else:
+            return self.getRawButtonReleased(self.Button.kBumperRight)
 
-    def getXButton(self):
-        return self.getButton(2)
+    def getAButton(self) -> bool:
+        """Read the value of the A button on the controller
+        :return: The state of the A button
+        """
+        return self.getRawButton(self.Button.kA)
 
-    def getXButtonPressed(self):
-        return self.getButtonPressed(2)
+    def getAButtonPressed(self) -> bool:
+        """Whether the A button was pressed since the last check.
+        :returns: Whether the button was pressed since the last check.
+        """
+        return self.getRawButtonPressed(self.Button.kA)
 
-    def getXButtonReleased(self):
-        return self.getButtonReleased(2)
+    def getAButtonReleased(self) -> bool:
+        """Whether the A button was released since the last check.
+        :returns: Whether the button was released since the last check.
+        """
+        return self.getRawButtonReleased(self.Button.kA)
 
-    def getYButton(self):
-        return self.getButton(3)
+    def getBButton(self) -> bool:
+        """Read the value of the B button on the controller
+        :return: The state of the B button
+        """
+        return self.getRawButton(self.Button.kB)
 
-    def getYButtonPressed(self):
-        return self.getButtonPressed(3)
+    def getBButtonPressed(self) -> bool:
+        """Whether the B button was pressed since the last check.
+        :returns: Whether the button was pressed since the last check.
+        """
+        return self.getRawButtonPressed(self.Button.kB)
 
-    def getYButtonReleased(self):
-        return self.getButtonReleased(3)
+    def getBButtonReleased(self) -> bool:
+        """Whether the B button was released since the last check.
+        :returns: Whether the button was released since the last check.
+        """
+        return self.getRawButtonReleased(self.Button.kB)
+
+    def getXButton(self) -> bool:
+        """Read the value of the X button on the controller
+        :return: The state of the X button
+        """
+        return self.getRawButton(self.Button.kX)
+
+    def getXButtonPressed(self) -> bool:
+        """Whether the X button was pressed since the last check.
+        :returns: Whether the button was pressed since the last check.
+        """
+        return self.getRawButtonPressed(self.Button.kX)
+
+    def getXButtonReleased(self) -> bool:
+        """Whether the X button was released since the last check.
+        :returns: Whether the button was released since the last check.
+        """
+        return self.getRawButtonReleased(self.Button.kX)
+
+    def getYButton(self) -> bool:
+        """Read the value of the Y button on the controller
+        :return: The state of the Y button
+        """
+        return self.getRawButton(self.Button.kY)
+
+    def getYButtonPressed(self) -> bool:
+        """Whether the Y button was pressed since the last check.
+        :returns: Whether the button was pressed since the last check.
+        """
+        return self.getRawButtonPressed(self.Button.kY)
+
+    def getYButtonReleased(self) -> bool:
+        """Whether the Y button was released since the last check.
+        :returns: Whether the button was released since the last check.
+        """
+        return self.getRawButtonReleased(self.Button.kY)
+
+    def getBackButton(self) -> bool:
+        """Read the value of the Back button on the controller
+        :return: The state of the Back button
+        """
+        return self.getRawButton(self.Button.kBack)
+
+    def getBackButtonPressed(self) -> bool:
+        """Whether the Back button was pressed since the last check.
+        :returns: Whether the button was pressed since the last check.
+        """
+        return self.getRawButtonPressed(self.Button.kBack)
+
+    def getBackButtonReleased(self) -> bool:
+        """Whether the Back button was released since the last check.
+        :returns: Whether the button was released since the last check.
+        """
+        return self.getRawButtonReleased(self.Button.kBack)
+
+    def getStartButton(self) -> bool:
+        """Read the value of the Start button on the controller
+        :return: The state of the Start button
+        """
+        return self.getRawButton(self.Button.kStart)
+
+    def getStartButtonPressed(self) -> bool:
+        """Whether the Start button was pressed since the last check.
+        :returns: Whether the button was pressed since the last check.
+        """
+        return self.getRawButtonPressed(self.Button.kStart)
+
+    def getStartButtonReleased(self) -> bool:
+        """Whether the Start button was released since the last check.
+        :returns: Whether the button was released since the last check.
+        """
+        return self.getRawButtonReleased(self.Button.kStart)
 
 class IllegialBuzzer():
     """
