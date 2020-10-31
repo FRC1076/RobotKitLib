@@ -57,8 +57,6 @@ class MyRobot():
         """
         Configures appropriate robot settings for teleop mode
         """
-        self.left.setInverted(True)
-        self.right.setInverted(True)
         
     def deadzone(self, val, deadzone):
         if abs(val) < deadzone:
@@ -70,6 +68,7 @@ class MyRobot():
         #rotation_value = rotation_value = self.driver.getX(LEFT_HAND)
         
         # Test controller
+        
         buttonA = self.driver.getAButton()
         print(buttonA)
         if buttonA:

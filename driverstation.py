@@ -70,7 +70,7 @@ while loopQuit == False:
     xbc_nt.putNumberArray("Buttons", buttons)
     xbc_nt.putNumberArray("Axis", axis_values)
 
-
+    print(buttons)
 
     """
     AButton = joystick.get_button(0)           #  get button from joystick
@@ -81,7 +81,7 @@ while loopQuit == False:
     # We can likely be more efficient by only updating the button
     # state when there is a button event.   Until things work at all,
     # it is not necessary.    But we should be doing it.
-    #
+    #"""
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
@@ -99,7 +99,7 @@ while loopQuit == False:
         # dominates events when used
         if event.type == pygame.JOYAXISMOTION:
             pass
-    """
+    
     time.sleep(0.5)
 
 pygame.quit()

@@ -39,25 +39,25 @@ class XboxController():
 
 
         for i in range(len(self.buttons)):
-            self.buttons[i] = self.nt.getNumberArray("Buttons", 0)[i]
+            self.buttons[i] = self.nt.getNumberArray("Buttons", self.buttons)[i]
         
         for j in range(len(self.axis_values)):
-            self.axis_values[j] = self.nt.getNumberArray("Axis", 0)[j]
+            self.axis_values[j] = self.nt.getNumberArray("Axis", self.buttons)[j]
 
 
     def getRawButton(self, v) -> bool:
-        newB = self.nt.getNumberArray("Buttons", 0)[v]
+        newB = self.nt.getNumberArray("Buttons", self.buttons)[v]
         self.buttons[v] = newB
         return newB
 
     def getRawButtonPressed(self, v) -> bool:
-        newB = self.nt.getNumberArray("Buttons", 0)[v]
+        newB = self.nt.getNumberArray("Buttons", self.buttons)[v]
         pressed = newB and not self.buttons[v]
         self.buttons[v] = newB
         return pressed
 
     def getRawButtonReleased(self, v) -> bool:
-        newB = self.nt.getNumberArray("Buttons", 0)[v]
+        newB = self.nt.getNumberArray("Buttons", self.buttons)[v]
         released =  not newB and self.buttons[v]
         self.buttons[v] = newB
         return released
@@ -70,10 +70,10 @@ class XboxController():
         :returns: the x position
         """
         if hand == self.Hand.kLeft:
-            self.axis_values[1] = self.nt.getNumberArray("Axis", 0)[1]
+            self.axis_values[1] = self.nt.getNumberArray("Axis", self.buttons)[1]
             return self.axis_values[1]
         else:
-            self.axis_values[4] = self.nt.getNumberArray("Axis", 0)[4]
+            self.axis_values[4] = self.nt.getNumberArray("Axis", self.buttons)[4]
             return self.axis_values[4]
 
     def getY(self, hand):
@@ -84,10 +84,10 @@ class XboxController():
         :returns: the y position
         """
         if hand == self.Hand.kLeft:
-            self.axis_values[0] = self.nt.getNumberArray("Axis", 0)[0]
+            self.axis_values[0] = self.nt.getNumberArray("Axis", self.buttons)[0]
             return self.axis_values[0]
         else:
-            self.axis_values[3] = self.nt.getNumberArray("Axis", 0)[3]
+            self.axis_values[3] = self.nt.getNumberArray("Axis", self.buttons)[3]
             return self.axis_values[3]
 
     def getBumper(self, hand) -> bool:

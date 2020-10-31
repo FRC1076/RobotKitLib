@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 #Other development stuff
-venv/
+.vscode/
 .vscode/
 pikitlib/build
 pikitlib/dist
