@@ -3,6 +3,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#Other development stuff
+venv/
+.vscode/
+pikitlib/build
+pikitlib/dist
+pikitlib/pikitlib.egg_info/
+pikitlib/.pypirc
+
+
 # C extensions
 *.so
 

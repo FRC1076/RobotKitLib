@@ -95,8 +95,8 @@ if __name__ == "__main__":
     m = main()
     m.connect()
 
-    x = threading.Thread(target=m.mainLoopThread)
-    x.start()
-
+    #x = threading.Thread(target=m.mainLoopThread)
+    #x.start()
+    m.debug()
 
     
