@@ -70,11 +70,11 @@ class XboxController():
         :returns: the x position
         """
         if hand == self.Hand.kLeft:
-            self.axis_values[1] = self.nt.getNumberArray("Axis", self.buttons)[1]
-            return self.axis_values[1]
+            self.axis_values[0] = self.nt.getNumberArray("Axis", self.buttons)[0]
+            return self.axis_values[0]
         else:
-            self.axis_values[4] = self.nt.getNumberArray("Axis", self.buttons)[4]
-            return self.axis_values[4]
+            self.axis_values[3] = self.nt.getNumberArray("Axis", self.buttons)[3]
+            return self.axis_values[3]
 
     def getY(self, hand):
         """Get the y position of the controller.
@@ -84,11 +84,11 @@ class XboxController():
         :returns: the y position
         """
         if hand == self.Hand.kLeft:
-            self.axis_values[0] = self.nt.getNumberArray("Axis", self.buttons)[0]
-            return self.axis_values[0]
+            self.axis_values[1] = self.nt.getNumberArray("Axis", self.buttons)[1]
+            return self.axis_values[1]
         else:
-            self.axis_values[3] = self.nt.getNumberArray("Axis", self.buttons)[3]
-            return self.axis_values[3]
+            self.axis_values[4] = self.nt.getNumberArray("Axis", self.buttons)[4]
+            return self.axis_values[4]
 
     def getBumper(self, hand) -> bool:
         """Read the values of the bumper button on the controller.

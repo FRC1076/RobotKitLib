@@ -57,6 +57,8 @@ class MyRobot():
         """
         Configures appropriate robot settings for teleop mode
         """
+        self.left.setInverted(True)
+        self.right.setInverted(True)
         
     def deadzone(self, val, deadzone):
         if abs(val) < deadzone:
