@@ -37,6 +37,9 @@ class XboxController():
         
         self.buttons = self.nt.getBooleanArray("Buttons", [False])
         self.axis_values = self.nt.getNumberArray("Axis", [0])
+        while self.axis_values == [0]:
+            time.sleep(0.02)
+            self.axis_values = list(self.nt.getNumberArray("Axis", [0]))
 
 
     def getRawButton(self, v) -> bool:

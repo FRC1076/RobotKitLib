@@ -44,10 +44,10 @@ LHand Y, LHand X, L trigger, RHand X, RHand Y, R trigger
 """
 
 
-buttons = [False] * joystick.get_numbuttons
+buttons = [False] * joystick.get_numbuttons()
 
 #
-axis_values = [0] * joystick.get_numaxes
+axis_values = [0] * joystick.get_numaxes()
 
 #  AButton is button[0]
 loopQuit = False
@@ -62,16 +62,32 @@ while loopQuit == False:
     """
 
     for i in range(len(buttons)):
-        buttons[i] = joystick.get_button(i)
-        
-
+        buttons[i] = bool(joystick.get_button(i))
+    print(axis_values)
+    #print(joystick.get_button(0))
     for j in range(len(axis_values)):
         axis_values[j] = joystick.get_axis(j)
     
     xbc_nt.putBooleanArray("Buttons", buttons)
-    xbc_nt.putNumberArray("Axis", axis_values)
+    xbc_nt.putNumberArray("Axis", list(axis_values))
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                loopQuit = True
 
-    print(buttons)
+        #print("Event type:", event.type) 
+        # Returns Joystick Button Motion
+        if event.type == pygame.JOYBUTTONDOWN:
+            print("joy button down")
+        if event.type == pygame.JOYBUTTONUP:
+            print("joy button up")
+        if event.type == pygame.JOYBALLMOTION:
+            print("joy ball motion")
+        # axis motion is movement of controller
+        # dominates events when used
+        if event.type == pygame.JOYAXISMOTION:
+            pass
+    #print(buttons)
     
     time.sleep(0.02)
 
