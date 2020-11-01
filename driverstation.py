@@ -74,20 +74,6 @@ while loopQuit == False:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 loopQuit = True
-
-        #print("Event type:", event.type) 
-        # Returns Joystick Button Motion
-        if event.type == pygame.JOYBUTTONDOWN:
-            print("joy button down")
-        if event.type == pygame.JOYBUTTONUP:
-            print("joy button up")
-        if event.type == pygame.JOYBALLMOTION:
-            print("joy ball motion")
-        # axis motion is movement of controller
-        # dominates events when used
-        if event.type == pygame.JOYAXISMOTION:
-            pass
-    #print(buttons)
     
     time.sleep(0.02)
 

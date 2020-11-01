@@ -1,6 +1,13 @@
-import RPi.GPIO as GPIO
+import sys
+try:
+    import RPi.GPIO as GPIO
+except Exception as e:
+    print("You are either not using a raspberry pi or dont have RPi.GPIO installed")
+    print("Quiting...")
+    sys.exit()
 
-class IllegialBuzzer():
+
+class IllegalBuzzer():
     """
     1: On 0: Off
     """

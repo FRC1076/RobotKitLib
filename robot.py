@@ -29,7 +29,7 @@ class MyRobot():
 
         self.DEADZONE = 0.4
 
-        #self.buzz = pikitlib.IllegialBuzzer()
+        #self.buzz = pikitlib.IllegalBuzzer()
 
         NetworkTables.initialize()
         self.driver = pikitlib.XboxController(0)
