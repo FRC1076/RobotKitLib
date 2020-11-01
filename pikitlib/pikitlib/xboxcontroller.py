@@ -38,12 +38,6 @@ class XboxController():
         self.buttons = self.nt.getBooleanArray("Buttons", [False])
         self.axis_values = self.nt.getNumberArray("Axis", [0])
 
-        """
-        for i in range(len(self.buttons)):
-            self.buttons[i] = self.nt.getBooleanArray("Buttons", self.buttons)[i]
-        
-        for j in range(len(self.axis_values)):
-            self.axis_values[j] = self.nt.getNumberArray("Axis", self.buttons)[j]"""
 
     def getRawButton(self, v) -> bool:
         newB = self.nt.getBooleanArray("Buttons", self.buttons)[v]
