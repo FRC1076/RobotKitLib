@@ -1,5 +1,6 @@
 import enum
 from networktables import NetworkTables
+import time
 
 class XboxController():
 
@@ -23,41 +24,40 @@ class XboxController():
     def __init__(self, id):
         self.id = id
         self.nt = NetworkTables.getTable("DriverStation/XboxController{}".format(id))
+
         # must initialize the state of all controls here, because
         # if the first inquiry asks if a button was pressed, then
         # it has to know if the state has changed since the last
         # time...
         # get and save button state
         
-        # A-0,B-1,X-2,Y-3
-
+        #Linux Xbox Controller Values:
         # A, B, X, Y, L bumpter, R bumber, back, start, big shinny button
-        self.buttons = [0,0,0,0,0,0,0,0]
-
         # LHand Y, LHand X, L trigger, RHand X, RHand Y, R trigger
-        self.axis_values = [0,0,0,0,0,0]
+        
+        self.buttons = self.nt.getBooleanArray("Buttons", [False])
+        self.axis_values = self.nt.getNumberArray("Axis", [0])
 
-
+        """
         for i in range(len(self.buttons)):
-            self.buttons[i] = self.nt.getNumberArray("Buttons", self.buttons)[i]
+            self.buttons[i] = self.nt.getBooleanArray("Buttons", self.buttons)[i]
         
         for j in range(len(self.axis_values)):
-            self.axis_values[j] = self.nt.getNumberArray("Axis", self.buttons)[j]
-
+            self.axis_values[j] = self.nt.getNumberArray("Axis", self.buttons)[j]"""
 
     def getRawButton(self, v) -> bool:
-        newB = self.nt.getNumberArray("Buttons", self.buttons)[v]
+        newB = self.nt.getBooleanArray("Buttons", self.buttons)[v]
         self.buttons[v] = newB
         return newB
 
     def getRawButtonPressed(self, v) -> bool:
-        newB = self.nt.getNumberArray("Buttons", self.buttons)[v]
+        newB = self.nt.getBooleanArray("Buttons", self.buttons)[v]
         pressed = newB and not self.buttons[v]
         self.buttons[v] = newB
         return pressed
 
     def getRawButtonReleased(self, v) -> bool:
-        newB = self.nt.getNumberArray("Buttons", self.buttons)[v]
+        newB = self.nt.getBooleanArray("Buttons", self.buttons)[v]
         released =  not newB and self.buttons[v]
         self.buttons[v] = newB
         return released
@@ -95,7 +95,7 @@ class XboxController():
         :param hand: Side of controller whose value should be returned.
         :return: The state of the button
         """
-        if hand == GenericHID.Hand.kLeft:
+        if hand == self.Hand.kLeft:
             return self.getRawButton(self.Button.kBumperLeft)
         else:
             return self.getRawButton(self.Button.kBumperRight)
