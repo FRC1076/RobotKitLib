@@ -20,6 +20,7 @@ class main():
         self.r = robot.MyRobot()
         self.current_mode = ""
         self.disabled = True
+        self.rl = threading.Thread(target=self.robotLoop)
         
     def connect(self):
         """
@@ -44,7 +45,13 @@ class main():
         """
         print("valueChanged: key: '%s'; value: %s; isNew: %s" % (key, value, isNew))
         if(key == "Mode"):
-            self.setupMode(value)
+            try:
+                self.setupMode(value)
+            except KeyboardInterrupt:
+                print("Quiting..")
+                m.disable()
+                sys.exit()
+            
         if(key == "Disabled"):
             self.disabled = value
         
@@ -55,12 +62,15 @@ class main():
         """
         Run the init function for the current mode
         """
-        self.current_mode = m
-
+        self.rl._stop()
         if m == "Teleop":
             self.r.teleopInit()
         elif m == "Auton":
             self.r.autonomousInit()
+
+        self.current_mode = m
+       
+        self.rl.start()
 
     def auton(self):
         self.r.autonomousPeriodic()
@@ -81,18 +91,18 @@ class main():
         Loop the mode function
         """
         while True:
-            while not self.disabled:
-                if self.current_mode == "Auton":
-                    self.auton()
-                elif self.current_mode == "Teleop":
-                    self.teleop()
-                time.sleep(0.02)
-            else:
+            if self.disabled:
                 self.disable()
-                #TODO: Figure out how to 
-                #TODO: some stuff to do while disabled
+                self.rl._stop()
+            time.sleep(0.02)
             
-            if 
+    def robotLoop(self):
+        while True:
+            if self.current_mode == "Auton":
+                    self.auton()
+            elif self.current_mode == "Teleop":
+                self.teleop()
+            time.sleep(0.02)
 
     def debug(self):
         self.disabled = False
@@ -112,12 +122,7 @@ if __name__ == "__main__":
     m = main()
     m.connect()
     m.start()
-    try:
-        m.mainLoopThread()
-    except KeyboardInterrupt:
-        print("Quiting..")
-        m.disable()
-        sys.exit()
+   
     #x = threading.Thread(target=m.mainLoopThread)
     #x.start()
     #m.debug()
