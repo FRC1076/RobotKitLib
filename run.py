@@ -68,6 +68,13 @@ class main():
     def teleop(self):
         self.r.teleopPeriodic()
         
+    def disable(self):
+        m1 = pikitlib.SpeedController(0)
+        m2 = pikitlib.SpeedController(2)
+        m3 = pikitlib.SpeedController(4)
+        m4 = pikitlib.SpeedController(6)
+        m = pikitlib.SpeedControllerGroup(m1,m2,m3,m4)
+        m.set(0)
 
     def mainLoopThread(self):
         """
@@ -81,7 +88,7 @@ class main():
                     self.teleop()
                 time.sleep(0.02)
             else:
-                pass
+                self.disable()
                 #TODO: Figure out how to 
                 #TODO: some stuff to do while disabled
 
