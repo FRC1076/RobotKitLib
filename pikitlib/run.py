@@ -47,11 +47,7 @@ class main():
         """
         print("valueChanged: key: '%s'; value: %s; isNew: %s" % (key, value, isNew))
         if(key == "Mode"):
-            try:
-                self.setupMode(value)
-            except KeyboardInterrupt:
-                self.quit()
-            
+            self.setupMode(value)
         if(key == "Disabled"):
             self.disabled = value
         
@@ -110,14 +106,15 @@ class main():
                 self.teleop()
 
             ts = 0.02 -  self.timer.get()
-            if ts > 0.02:
-                print(self.current_mode + " has slipped!")
+            
             if ts > 0.5:
                 self.disabled = True
                 print("Error! " + self.current_mode + " has taken too long!")
                 print("Quiting...")
-                      
-            time.sleep(ts)
+            elif ts > 0.02:
+                print(self.current_mode + " has slipped!")
+            else:         
+                time.sleep(ts)
 
     def debug(self):
         self.disabled = False
@@ -137,7 +134,10 @@ if __name__ == "__main__":
     m = main()
     m.connect()
     m.start()
-   
+    try:
+        m.mainLoopThread()
+    except KeyboardInterrupt:
+        m.quit()
     #x = threading.Thread(target=m.mainLoopThread)
     #x.start()
     #m.debug()
