@@ -4,7 +4,7 @@ try:
 except Exception as e:
     print("You are either not using a raspberry pi or dont have RPi.GPIO installed")
     print("Quiting...")
-    sys.exit()
+    #sys.exit()
 
 
 class IllegalBuzzer():
