@@ -91,6 +91,8 @@ class main():
                 self.disable()
                 #TODO: Figure out how to 
                 #TODO: some stuff to do while disabled
+            
+            if 
 
     def debug(self):
         self.disabled = False
@@ -106,10 +108,16 @@ class main():
 
 
 if __name__ == "__main__":
+    
     m = main()
     m.connect()
     m.start()
-    m.mainLoopThread()
+    try:
+        m.mainLoopThread()
+    except KeyboardInterrupt:
+        print("Quiting..")
+        m.disable()
+        sys.exit()
     #x = threading.Thread(target=m.mainLoopThread)
     #x.start()
     #m.debug()

@@ -79,6 +79,7 @@ while loopQuit == False:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 loopQuit = True
+                mode_nt.putBoolean("Disabled", True)
                 pygame.quit()
             if event.key == pygame.K_e and disabled == True:
                 disabled = False
