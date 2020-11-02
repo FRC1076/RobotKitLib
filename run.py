@@ -6,7 +6,7 @@ import time
 from networktables import NetworkTables
 import threading
 import logging
-
+import pikitlib
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -63,7 +63,7 @@ class main():
             self.r.autonomousInit()
 
     def auton(self):
-        self.r.autonomousPeriodic
+        self.r.autonomousPeriodic()
 
     def teleop(self):
         self.r.teleopPeriodic()
@@ -82,6 +82,7 @@ class main():
                 time.sleep(0.02)
             else:
                 pass
+                #TODO: Figure out how to 
                 #TODO: some stuff to do while disabled
 
     def debug(self):
@@ -89,6 +90,8 @@ class main():
         self.start()
         self.setupMode("Teleop")
         self.mainLoopThread()
+
+    
             
 
 
@@ -98,9 +101,10 @@ class main():
 if __name__ == "__main__":
     m = main()
     m.connect()
-
+    m.start()
+    m.mainLoopThread()
     #x = threading.Thread(target=m.mainLoopThread)
     #x.start()
-    m.debug()
+    #m.debug()
 
     
