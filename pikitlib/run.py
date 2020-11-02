@@ -20,7 +20,7 @@ class main():
         self.r = robot.MyRobot()
         self.current_mode = ""
         self.disabled = True
-        self.rl = threading.Thread(target=self.robotLoop)
+        
 
         self.timer = pikitlib.Timer()
         
@@ -58,8 +58,11 @@ class main():
         """
         Run the init function for the current mode
         """
-        self.rl._stop()
-        self.timer.start()
+        try:
+            self.rl._stop()
+        except Exception:
+            self.rl = threading.Thread(target=self.robotLoop)
+        
         if m == "Teleop":
             self.r.teleopInit()
         elif m == "Auton":
@@ -100,21 +103,23 @@ class main():
             
     def robotLoop(self):
         while True:
+            self.timer.start()
             if self.current_mode == "Auton":
                 self.auton()
             elif self.current_mode == "Teleop":
                 self.teleop()
-
+            self.timer.stop()
             ts = 0.02 -  self.timer.get()
-            
-            if ts > 0.5:
-                self.disabled = True
+            self.timer.reset()
+            if ts < -0.5:
                 print("Error! " + self.current_mode + " has taken too long!")
                 print("Quiting...")
-            elif ts > 0.02:
+                self.quit()
+            elif ts < 0:
                 print(self.current_mode + " has slipped!")
-            else:         
+            else:        
                 time.sleep(ts)
+            
 
     def debug(self):
         self.disabled = False
