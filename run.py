@@ -64,21 +64,25 @@ class main():
 
     def auton(self):
         self.r.autonomousPeriodic
-        time.sleep(0.02)
 
     def teleop(self):
         self.r.teleopPeriodic()
-        time.sleep(0.02)
+        
 
     def mainLoopThread(self):
         """
         Loop the mode function
         """
-        while not self.disabled:
-            if self.current_mode == "Auton":
-                self.auton()
-            elif self.current_mode == "Teleop":
-                self.teleop()
+        while True:
+            while not self.disabled:
+                if self.current_mode == "Auton":
+                    self.auton()
+                elif self.current_mode == "Teleop":
+                    self.teleop()
+                time.sleep(0.02)
+            else:
+                pass
+                #TODO: some stuff to do while disabled
 
     def debug(self):
         self.disabled = False
@@ -95,8 +99,8 @@ if __name__ == "__main__":
     m = main()
     m.connect()
 
-    x = threading.Thread(target=m.mainLoopThread)
-    x.start()
-
+    #x = threading.Thread(target=m.mainLoopThread)
+    #x.start()
+    m.debug()
 
     

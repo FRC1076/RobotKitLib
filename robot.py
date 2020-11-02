@@ -29,7 +29,7 @@ class MyRobot():
 
         self.DEADZONE = 0.4
 
-        self.buzz = pikitlib.IllegialBuzzer()
+        #self.buzz = pikitlib.IllegalBuzzer()
 
         NetworkTables.initialize()
         self.driver = pikitlib.XboxController(0)
@@ -70,12 +70,12 @@ class MyRobot():
         #rotation_value = rotation_value = self.driver.getX(LEFT_HAND)
         
         # Test controller
-        buttonA = self.driver.getAButton()
-        print(buttonA)
-        if buttonA:
-            self.myRobot.tankDrive(0.4,0.4)
-        else:
-            self.myRobot.tankDrive(0.0,0.0)
+        
+        forward = self.driver.getX(0)
+        forward = 0.80 * self.deadzone(forward, 0.2)
+        rotation_value = -0.8 * self.driver.getY(1)
+        self.myRobot.arcadeDrive(forward,rotation_value)
+
 
         """
         forward = 0.7
