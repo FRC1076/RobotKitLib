@@ -6,7 +6,7 @@ import time
 from networktables import NetworkTables
 import threading
 import logging
-
+import pikitlib
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -20,6 +20,9 @@ class main():
         self.r = robot.MyRobot()
         self.current_mode = ""
         self.disabled = True
+        
+
+        self.timer = pikitlib.Timer()
         
     def connect(self):
         """
@@ -55,40 +58,76 @@ class main():
         """
         Run the init function for the current mode
         """
-        self.current_mode = m
-
+        try:
+            self.rl._stop()
+        except Exception:
+            self.rl = threading.Thread(target=self.robotLoop)
+        
         if m == "Teleop":
             self.r.teleopInit()
         elif m == "Auton":
             self.r.autonomousInit()
 
+        self.current_mode = m
+       
+        self.rl.start()
+
     def auton(self):
-        self.r.autonomousPeriodic
+        self.r.autonomousPeriodic()
 
     def teleop(self):
         self.r.teleopPeriodic()
         
+    def disable(self):
+        m1 = pikitlib.SpeedController(0)
+        m2 = pikitlib.SpeedController(2)
+        m3 = pikitlib.SpeedController(4)
+        m4 = pikitlib.SpeedController(6)
+        m = pikitlib.SpeedControllerGroup(m1,m2,m3,m4)
+        m.set(0)
 
     def mainLoopThread(self):
         """
         Loop the mode function
         """
         while True:
-            while not self.disabled:
-                if self.current_mode == "Auton":
-                    self.auton()
-                elif self.current_mode == "Teleop":
-                    self.teleop()
-                time.sleep(0.02)
-            else:
-                pass
-                #TODO: some stuff to do while disabled
+            if self.disabled:
+                self.disable()
+                self.rl._stop()
+            time.sleep(0.02)
+
+    def quit(self):
+        print("Quiting..")
+        self.disable()
+        sys.exit()
+            
+    def robotLoop(self):
+        while True:
+            self.timer.start()
+            if self.current_mode == "Auton":
+                self.auton()
+            elif self.current_mode == "Teleop":
+                self.teleop()
+            self.timer.stop()
+            ts = 0.02 -  self.timer.get()
+            self.timer.reset()
+            if ts < -0.5:
+                print("Error! " + self.current_mode + " has taken too long!")
+                print("Quiting...")
+                self.quit()
+            elif ts < 0:
+                print(self.current_mode + " has slipped!")
+            else:        
+                time.sleep(ts)
+            
 
     def debug(self):
         self.disabled = False
         self.start()
         self.setupMode("Teleop")
         self.mainLoopThread()
+
+    
             
 
 
@@ -96,11 +135,16 @@ class main():
 
 
 if __name__ == "__main__":
+    
     m = main()
     m.connect()
-
+    m.start()
+    try:
+        m.mainLoopThread()
+    except KeyboardInterrupt:
+        m.quit()
     #x = threading.Thread(target=m.mainLoopThread)
     #x.start()
-    m.debug()
+    #m.debug()
 
     

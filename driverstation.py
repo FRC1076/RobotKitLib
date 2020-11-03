@@ -32,6 +32,7 @@ joystick.init()#Initializes Joystick
 # save reference to table for each xbox controller
 xbc_nt = NetworkTables.getTable('DriverStation/XboxController0')
 
+mode_nt = NetworkTables.getTable('RobotMode')
 
 """
 XBox Controller Linux Values:
@@ -48,8 +49,12 @@ buttons = [False] * joystick.get_numbuttons()
 
 #
 axis_values = [0] * joystick.get_numaxes()
-
+pygame.display.set_mode((100, 100))
 #  AButton is button[0]
+
+mode = ""
+disabled = True
+
 loopQuit = False
 while loopQuit == False:
 
@@ -63,7 +68,7 @@ while loopQuit == False:
 
     for i in range(len(buttons)):
         buttons[i] = bool(joystick.get_button(i))
-    print(axis_values)
+    #print(axis_values)
     #print(joystick.get_button(0))
     for j in range(len(axis_values)):
         axis_values[j] = joystick.get_axis(j)
@@ -74,6 +79,23 @@ while loopQuit == False:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 loopQuit = True
+                mode_nt.putBoolean("Disabled", True)
+                pygame.quit()
+            if event.key == pygame.K_e and disabled == True:
+                disabled = False
+                print("Enabled")
+            elif event.key == pygame.K_d and disabled == False:
+                print("Disabled")
+                disabled = True
+            elif event.key == pygame.K_t and mode != "Teleop":
+                print("Starting Teleop")
+                mode = "Teleop"
+            elif event.key == pygame.K_a and mode != "Auton":
+                print("Starting auton")
+                mode = "Auton"
+
+    mode_nt.putBoolean("Disabled", disabled)
+    mode_nt.putString("Mode", mode)
     
     time.sleep(0.02)
 
