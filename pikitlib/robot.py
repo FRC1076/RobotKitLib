@@ -7,10 +7,10 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 #MOTOR CHANNEL
-FRONT_LEFT = 0
+FRONT_LEFT = 1
 BACK_LEFT = 2
-BACK_RIGHT = 4
-FRONT_RIGHT = 6
+BACK_RIGHT = 3
+FRONT_RIGHT = 4
 
 class MyRobot():
     def robotInit(self):
