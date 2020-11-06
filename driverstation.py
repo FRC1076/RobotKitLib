@@ -1,6 +1,9 @@
 from networktables import NetworkTables
 import pygame, sys, time    #Imports Modules
 from pygame.locals import *
+import threading
+
+import logreceiver
 
 def joystick_stats(joystick):
     """
@@ -46,6 +49,9 @@ LHand Y, LHand X, L trigger, RHand X, RHand Y, R trigger
 
 
 buttons = [False] * joystick.get_numbuttons()
+
+lg = threading.Thread(target=logreceiver.main)
+lg.start()
 
 #
 axis_values = [0] * joystick.get_numaxes()
@@ -99,5 +105,6 @@ while loopQuit == False:
     
     time.sleep(0.02)
 
+lg._stop()
 pygame.quit()
 sys.exit()
