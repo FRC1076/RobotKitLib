@@ -2,6 +2,8 @@ import enum
 from networktables import NetworkTables
 import time
 
+import xboxconfig
+
 class XboxController():
 
 
@@ -67,11 +69,11 @@ class XboxController():
         :returns: the x position
         """
         if hand == self.Hand.kLeft:
-            self.axis_values[0] = self.nt.getNumberArray("Axis", self.buttons)[0]
-            return self.axis_values[0]
+            self.axis_values[xboxconfig.LEFT_JOY_X] = self.nt.getNumberArray("Axis", self.buttons)[xboxconfig.LEFT_JOY_X]
+            return self.axis_values[xboxconfig.LEFT_JOY_X]
         else:
-            self.axis_values[3] = self.nt.getNumberArray("Axis", self.buttons)[3]
-            return self.axis_values[3]
+            self.axis_values[xboxconfig.RIGHT_JOY_X] = self.nt.getNumberArray("Axis", self.buttons)[xboxconfig.RIGHT_JOY_X]
+            return self.axis_values[xboxconfig.RIGHT_JOY_X]
 
     def getY(self, hand):
         """Get the y position of the controller.
@@ -80,6 +82,7 @@ class XboxController():
 
         :returns: the y position
         """
+        #TODO: CHANGE VALUES TO xboxconfig
         if hand == self.Hand.kLeft:
             self.axis_values[1] = self.nt.getNumberArray("Axis", self.buttons)[1]
             return self.axis_values[1]

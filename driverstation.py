@@ -79,6 +79,8 @@ while loopQuit == False:
     for j in range(len(axis_values)):
         axis_values[j] = joystick.get_axis(j)
     
+    #print(axis_values)
+
     xbc_nt.putBooleanArray("Buttons", buttons)
     xbc_nt.putNumberArray("Axis", list(axis_values))
     for event in pygame.event.get():
