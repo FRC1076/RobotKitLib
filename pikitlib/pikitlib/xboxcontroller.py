@@ -82,13 +82,12 @@ class XboxController():
 
         :returns: the y position
         """
-        #TODO: CHANGE VALUES TO xboxconfig
         if hand == self.Hand.kLeft:
-            self.axis_values[1] = self.nt.getNumberArray("Axis", self.buttons)[1]
-            return self.axis_values[1]
+            self.axis_values[xboxconfig.LEFT_JOY_Y] = self.nt.getNumberArray("Axis", self.buttons)[xboxconfig.LEFT_JOY_Y]
+            return self.axis_values[xboxconfig.LEFT_JOY_Y]
         else:
-            self.axis_values[4] = self.nt.getNumberArray("Axis", self.buttons)[4]
-            return self.axis_values[4]
+            self.axis_values[xboxconfig.RIGHT_JOY_X] = self.nt.getNumberArray("Axis", self.buttons)[xboxconfig.RIGHT_JOY_X]
+            return self.axis_values[xboxconfig.RIGHT_JOY_X]
 
     def getBumper(self, hand) -> bool:
         """Read the values of the bumper button on the controller.
