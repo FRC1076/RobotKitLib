@@ -11,15 +11,15 @@ class IllegalBuzzer():
     """
     1: On 0: Off
     """
-    def __init__(self):
+    def __init__(self, pin):
         print("Never use this outside testing")
         GPIO.setwarnings(False)
-        self.Buzzer_Pin = 17
+        self.buzzer_pin = pin
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.Buzzer_Pin,GPIO.OUT)
+        GPIO.setup(self.buzzer_pin,GPIO.OUT)
 
     def set(self, value):
         if value == 0:
-            GPIO.output(self.Buzzer_Pin,False)
+            GPIO.output(self.buzzer_pin,False)
         else:
-            GPIO.output(self.Buzzer_Pin,True)
+            GPIO.output(self.buzzer_pin,True)

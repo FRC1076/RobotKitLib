@@ -1,12 +1,22 @@
 # python run.py robot.py
 
+
+#General Imports
 import sys
-import robot
 import time
-from networktables import NetworkTables
 import threading
-import logging
+
+#Robot
+import robot
 import pikitlib
+from networktables import NetworkTables
+
+
+
+#Networking and Logging
+import logging
+import logging.handlers
+
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -23,6 +33,9 @@ class main():
         
 
         self.timer = pikitlib.Timer()
+
+        
+
         
     def connect(self):
         """
@@ -36,16 +49,26 @@ class main():
         """
         Setup the listener to detect any changes to the robotmode table
         """
-        print(info, "; Connected=%s" % connected)
+        #print(info, "; Connected=%s" % connected)
+        logging.info("%s; Connected=%s", info, connected)
         sd = NetworkTables.getTable("RobotMode")
         sd.addEntryListener(self.valueChanged)
+
+    def setupLogging(self):
+        rootLogger = logging.getLogger('')
+        rootLogger.setLevel(logging.DEBUG)
+        socketHandler = logging.handlers.SocketHandler(str(NetworkTables.getRemoteAddress()),
+            logging.handlers.DEFAULT_TCP_LOGGING_PORT)
+        
+        rootLogger.addHandler(socketHandler)
+
 
    
     def valueChanged(self, table, key, value, isNew):
         """
         Check for new changes and use them
         """
-        print("valueChanged: key: '%s'; value: %s; isNew: %s" % (key, value, isNew))
+        #print("valueChanged: key: '%s'; value: %s; isNew: %s" % (key, value, isNew))
         if(key == "Mode"):
             self.setupMode(value)
         if(key == "Disabled"):
@@ -97,7 +120,7 @@ class main():
             time.sleep(0.02)
 
     def quit(self):
-        print("Quiting..")
+        logging.info("Quitting...")
         self.disable()
         sys.exit()
             
@@ -112,11 +135,10 @@ class main():
             ts = 0.02 -  self.timer.get()
             self.timer.reset()
             if ts < -0.5:
-                print("Error! " + self.current_mode + " has taken too long!")
-                print("Quiting...")
+                logging.critical("Program taking too long!")
                 self.quit()
             elif ts < 0:
-                print(self.current_mode + " has slipped!")
+                logging.warning("%s has slipped by %s miliseconds!", self.current_mode, ts * -1000)
             else:        
                 time.sleep(ts)
             

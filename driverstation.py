@@ -1,6 +1,9 @@
 from networktables import NetworkTables
 import pygame, sys, time    #Imports Modules
 from pygame.locals import *
+import threading
+
+import logreceiver
 
 def joystick_stats(joystick):
     """
@@ -47,6 +50,9 @@ LHand Y, LHand X, L trigger, RHand X, RHand Y, R trigger
 
 buttons = [False] * joystick.get_numbuttons()
 
+lg = threading.Thread(target=logreceiver.main)
+lg.start()
+
 #
 axis_values = [0] * joystick.get_numaxes()
 pygame.display.set_mode((100, 100))
@@ -73,6 +79,8 @@ while loopQuit == False:
     for j in range(len(axis_values)):
         axis_values[j] = joystick.get_axis(j)
     
+    #print(axis_values)
+
     xbc_nt.putBooleanArray("Buttons", buttons)
     xbc_nt.putNumberArray("Axis", list(axis_values))
     for event in pygame.event.get():
@@ -99,5 +107,6 @@ while loopQuit == False:
     
     time.sleep(0.02)
 
+lg._stop()
 pygame.quit()
 sys.exit()
