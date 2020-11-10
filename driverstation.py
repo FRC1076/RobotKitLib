@@ -72,7 +72,7 @@ def joystick_stats(joystick):
 
 # Construct an argument parser
 parser = argparse.ArgumentParser()
-parser.add_argument("ip_addr")
+parser.add_argument("ip_addr", help="IP address of the server")
 args = parser.parse_args()
 ip = args.ip_addr
 print(ip)
