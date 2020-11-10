@@ -11,6 +11,7 @@ import logreceiver
 import ctypes
 import logging
 
+import argparse
 
 class RectItem():
     def __init__(self, color, x,y,width,height, text=''):
@@ -65,10 +66,17 @@ def joystick_stats(joystick):
     return nsticks, report
 
 # parse command line argument
-if len(sys.argv) != 2:
-    print("Error: specify robot IP to connect; Bye!")
-    exit(0)
+#if len(sys.argv) != 2:
+#    print("Error: specify robot IP to connect; Bye!")
+#    exit(0)
 
+# Construct an argument parser
+parser = argparse.ArgumentParser()
+parser.add_argument("ip_addr")
+args = parser.parse_args()
+ip = args.ip_addr
+print(ip)
+NetworkTables.initialize(ip)
 
 
 
@@ -104,9 +112,7 @@ def redrawWindow():
 redrawWindow()
 pygame.display.update()
 
-# assume the first arg is the robot IP address
-ip = sys.argv[1]
-NetworkTables.initialize(ip)
+
 
 # save reference to table for each xbox controller
 xbc_nt = NetworkTables.getTable('DriverStation/XboxController0')
