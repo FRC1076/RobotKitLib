@@ -1,9 +1,56 @@
-from networktables import NetworkTables
+
+#Pygame Imports
 import pygame, sys, time    #Imports Modules
 from pygame.locals import *
-import threading
 
+#Robot kit imports
+from networktables import NetworkTables
+#General Imports
+import threading
 import logreceiver
+import ctypes
+import logging
+
+
+class RectItem():
+    def __init__(self, color, x,y,width,height, text=''):
+        self.color = color
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.text = text
+
+    def setText(self, t):
+        self.text = t
+
+    def draw(self,win,outline=None):
+        #Call this method to draw the button on the screen
+        if outline:
+            pygame.draw.rect(win, outline, (self.x-2,self.y-2,self.width+4,self.height+4),0)
+            
+        pygame.draw.rect(win, self.color, (self.x,self.y,self.width,self.height),0)
+        
+        if self.text != '':
+            font = pygame.font.SysFont('comicsans', 60)
+            text = font.render(self.text, 1, (0,0,0))
+            win.blit(text, 
+                (self.x + (self.width/2 - text.get_width()/2),
+                 self.y + (self.height/2 - text.get_height()/2)))
+ 
+class Button(RectItem):
+
+
+    def isOver(self, pos):
+        #Pos is the mouse position or a tuple of (x,y) coordinates
+        if pos[0] > self.x and pos[0] < self.x + self.width:
+            if pos[1] > self.y and pos[1] < self.y + self.height:
+                #self.onPressed()
+                return True
+            
+        return False
+        
+
 
 def joystick_stats(joystick):
     """
@@ -22,9 +69,9 @@ if len(sys.argv) != 2:
     print("Error: specify robot IP to connect; Bye!")
     exit(0)
 
-# assume the first arg is the robot IP address
-ip = sys.argv[1]
-NetworkTables.initialize(ip)
+
+
+
 
 pygame.init()#Initializes Pygame
 pygame.joystick.init()
@@ -32,34 +79,60 @@ pygame.joystick.init()
 joystick = pygame.joystick.Joystick(0)
 joystick.init()#Initializes Joystick
 
+# Initialize Window
+screen = pygame.display.set_mode((500, 600))
+clock = pygame.time.Clock()
+font = pygame.font.SysFont("Arial", 20)
+
+#pygame setup
+descriptionText = RectItem((0,255,0), 0, 0, 500,40, "PiKitLib Driverstation")
+enableButton = Button((0,255,0), 0,225,250,100, "Enable")
+disableButton = Button((0,255,0), 250,225,250,100, "Disable")
+autonButton = Button((0,255,0),     0,355,250,100, "Start Auton")
+teleopButton = Button((0,255,0), 250,355,250,100, "Start Teleop")
+pygame_buttons = [enableButton,disableButton, autonButton, teleopButton]
+
+def redrawWindow():
+    screen.fill((255,255,255))
+    for bt in pygame_buttons:
+        bt.draw(screen)
+        
+        
+
+    descriptionText.draw(screen)
+
+redrawWindow()
+pygame.display.update()
+
+# assume the first arg is the robot IP address
+ip = sys.argv[1]
+NetworkTables.initialize(ip)
+
 # save reference to table for each xbox controller
 xbc_nt = NetworkTables.getTable('DriverStation/XboxController0')
-
 mode_nt = NetworkTables.getTable('RobotMode')
-
-"""
-XBox Controller Linux Values:
-
-Buttons: 0-10
-A, B, X, Y, L bumpter, R bumber, back, start, big shinny button, L stick button, R stick button
-
-
-LHand Y, LHand X, L trigger, RHand X, RHand Y, R trigger
-"""
-
-
 buttons = [False] * joystick.get_numbuttons()
 
+
+
+
+
 lg = threading.Thread(target=logreceiver.main)
+lg.daemon = True
 lg.start()
 
-#
+
 axis_values = [0] * joystick.get_numaxes()
-pygame.display.set_mode((100, 100))
-#  AButton is button[0]
+
+
 
 mode = ""
 disabled = True
+
+
+
+        
+
 
 loopQuit = False
 while loopQuit == False:
@@ -83,30 +156,48 @@ while loopQuit == False:
 
     xbc_nt.putBooleanArray("Buttons", buttons)
     xbc_nt.putNumberArray("Axis", list(axis_values))
+
+    redrawWindow()
     for event in pygame.event.get():
+        pos = pygame.mouse.get_pos()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 loopQuit = True
-                mode_nt.putBoolean("Disabled", True)
-                pygame.quit()
-            if event.key == pygame.K_e and disabled == True:
-                disabled = False
+                quit()
+        if event.type == pygame.QUIT:
+                loopQuit = True
+                quit()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if enableButton.isOver(pos) and disabled == True:
                 print("Enabled")
-            elif event.key == pygame.K_d and disabled == False:
+                disabled = False
+            elif disableButton.isOver(pos) and disabled == False:
                 print("Disabled")
                 disabled = True
-            elif event.key == pygame.K_t and mode != "Teleop":
-                print("Starting Teleop")
+            elif teleopButton.isOver(pos) and mode != "Teleop":
                 mode = "Teleop"
-            elif event.key == pygame.K_a and mode != "Auton":
+                print("Starting Teleop")
+            elif autonButton.isOver(pos) and mode != "Auton":
                 print("Starting auton")
                 mode = "Auton"
 
+        if event.type == pygame.MOUSEMOTION:
+            for b in pygame_buttons:
+                if b.isOver(pos):
+                    b.color = (0, 220, 0)
+                else:
+                    b.color = (0, 255, 0)
+
     mode_nt.putBoolean("Disabled", disabled)
     mode_nt.putString("Mode", mode)
-    
+    pygame.display.update()
+    clock.tick(30)
     time.sleep(0.02)
 
-lg._stop()
-pygame.quit()
-sys.exit()
+def quit():
+    mode_nt.putBoolean("Disabled", True)
+    pygame.quit()
+    sys.exit()
+
+quit()
