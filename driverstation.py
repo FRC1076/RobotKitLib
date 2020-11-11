@@ -21,9 +21,21 @@ class RectItem():
         self.width = width
         self.height = height
         self.text = text
+        self.selected = False
+
+    def isSelected(self):
+        return self.selected
 
     def setText(self, t):
         self.text = t
+
+    def select(self):
+        self.selected = True
+        self.color = (0, 220, 0)
+   
+    def unselect(self):
+        self.selected = False
+        self.color = (0, 255, 0)
 
     def draw(self,win,outline=None):
         #Call this method to draw the button on the screen
@@ -31,7 +43,6 @@ class RectItem():
             pygame.draw.rect(win, outline, (self.x-2,self.y-2,self.width+4,self.height+4),0)
             
         pygame.draw.rect(win, self.color, (self.x,self.y,self.width,self.height),0)
-        
         if self.text != '':
             font = pygame.font.SysFont('comicsans', 60)
             text = font.render(self.text, 1, (0,0,0))
@@ -41,6 +52,7 @@ class RectItem():
  
 class Button(RectItem):
 
+    
 
     def isOver(self, pos):
         #Pos is the mouse position or a tuple of (x,y) coordinates
@@ -50,6 +62,11 @@ class Button(RectItem):
                 return True
             
         return False
+
+   
+
+
+    
         
 
 
@@ -174,26 +191,37 @@ while loopQuit == False:
                 loopQuit = True
                 quit()
 
+        if event.type == pygame.MOUSEMOTION:
+            for b in pygame_buttons:
+                if not b.selected:
+                    if b.isOver(pos):
+                        b.color = (0, 220, 0)
+                    else:
+                        b.color = (0, 250, 0)
         if event.type == pygame.MOUSEBUTTONDOWN:
             if enableButton.isOver(pos) and disabled == True:
                 print("Enabled")
                 disabled = False
+                disableButton.unselect()
+                enableButton.select()
             elif disableButton.isOver(pos) and disabled == False:
                 print("Disabled")
                 disabled = True
+                disableButton.select()
+                enableButton.unselect()
             elif teleopButton.isOver(pos) and mode != "Teleop":
                 mode = "Teleop"
                 print("Starting Teleop")
+                teleopButton.select()
+                autonButton.unselect()
+                
             elif autonButton.isOver(pos) and mode != "Auton":
                 print("Starting auton")
                 mode = "Auton"
+                teleopButton.unselect()
+                autonButton.select()
 
-        if event.type == pygame.MOUSEMOTION:
-            for b in pygame_buttons:
-                if b.isOver(pos):
-                    b.color = (0, 220, 0)
-                else:
-                    b.color = (0, 255, 0)
+        
 
     mode_nt.putBoolean("Disabled", disabled)
     mode_nt.putString("Mode", mode)
