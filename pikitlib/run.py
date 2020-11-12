@@ -116,7 +116,10 @@ class main():
         while True:
             if self.disabled:
                 self.disable()
-                self.rl._stop()
+                try:
+                    self.rl._stop()
+                except Exception:
+                    self.rl = threading.Thread(target=self.robotLoop)
             time.sleep(0.02)
 
     def quit(self):

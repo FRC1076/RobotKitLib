@@ -31,7 +31,7 @@ class RectItem():
 
     def select(self):
         self.selected = True
-        self.color = (0, 220, 0)
+        self.color = (0, 180, 0)
    
     def unselect(self):
         self.selected = False
@@ -195,7 +195,7 @@ while loopQuit == False:
             for b in pygame_buttons:
                 if not b.selected:
                     if b.isOver(pos):
-                        b.color = (0, 220, 0)
+                        b.color = (0, 180, 0)
                     else:
                         b.color = (0, 250, 0)
         if event.type == pygame.MOUSEBUTTONDOWN:
