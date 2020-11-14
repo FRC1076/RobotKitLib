@@ -50,9 +50,9 @@ xbc_nt = NetworkTables.getTable('DriverStation/XboxController0')
 mode_nt = NetworkTables.getTable('RobotMode')
 buttons = [False] * joystick.get_numbuttons()
 
-lg = threading.Thread(target=logreceiver.main)
-lg.daemon = True
-lg.start()
+#lg = threading.Thread(target=logreceiver.main)
+#lg.daemon = True
+#lg.start()
 
 
 axis_values = [0] * joystick.get_numaxes()
@@ -81,7 +81,7 @@ while loopQuit == False:
     xbc_nt.putBooleanArray("Buttons", buttons)
     xbc_nt.putNumberArray("Axis", list(axis_values))
     
-
+    #TODO: Fix
     btn = GUI.getButtonPressed
     if btn == EnableBTN and disabled == True:
         print("Enabled")
