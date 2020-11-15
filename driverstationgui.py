@@ -130,7 +130,7 @@ class DriverstationGUI():
 
     def getQuit(self):
         for event in self.getCurrentEvents():
-            if event.type == pygame.QUIT or event.key == pygame.K_ESCAPE:
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 return True
         return False
     
