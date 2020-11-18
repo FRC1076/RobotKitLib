@@ -76,15 +76,13 @@ class main():
         
     def start(self):    
         self.r.robotInit()
+        self.rl = threading.Thread(target=self.robotLoop)
 
     def setupMode(self, m):
         """
         Run the init function for the current mode
         """
-        try:
-            self.rl._stop()
-        except Exception:
-            self.rl = threading.Thread(target=self.robotLoop)
+        self.rl._stop()
         
         if m == "Teleop":
             self.r.teleopInit()
@@ -117,6 +115,7 @@ class main():
             if self.disabled:
                 self.disable()
                 self.rl._stop()
+                    
             time.sleep(0.02)
 
     def quit(self):
