@@ -77,6 +77,9 @@ class main():
     def start(self):    
         self.r.robotInit()
         self.rl = threading.Thread(target=self.robotLoop)
+        self.rl.start()
+        if self.rl.is_alive():
+            logging.debug("Main thread created")
 
     def setupMode(self, m):
         """
@@ -91,7 +94,7 @@ class main():
 
         self.current_mode = m
        
-        self.rl.start()
+        #self.rl.start()
 
     def auton(self):
         self.r.autonomousPeriodic()
@@ -114,7 +117,7 @@ class main():
         while True:
             if self.disabled:
                 self.disable()
-                self.rl._stop()
+                #self.rl._stop()
                     
             time.sleep(0.02)
 
@@ -125,21 +128,24 @@ class main():
             
     def robotLoop(self):
         while True:
-            self.timer.start()
-            if self.current_mode == "Auton":
-                self.auton()
-            elif self.current_mode == "Teleop":
-                self.teleop()
-            self.timer.stop()
-            ts = 0.02 -  self.timer.get()
-            self.timer.reset()
-            if ts < -0.5:
-                logging.critical("Program taking too long!")
-                self.quit()
-            elif ts < 0:
-                logging.warning("%s has slipped by %s miliseconds!", self.current_mode, ts * -1000)
-            else:        
-                time.sleep(ts)
+            if not self.disabled:
+                self.timer.start()
+                if self.current_mode == "Auton":
+                    self.auton()
+                elif self.current_mode == "Teleop":
+                    self.teleop()
+                self.timer.stop()
+                ts = 0.02 -  self.timer.get()
+                self.timer.reset()
+                if ts < -0.5:
+                    logging.critical("Program taking too long!")
+                    self.quit()
+                elif ts < 0:
+                    logging.warning("%s has slipped by %s miliseconds!", self.current_mode, ts * -1000)
+                else:        
+                    time.sleep(ts)
+            else:
+                self.rl._stop
             
 
     def debug(self):
