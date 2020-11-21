@@ -85,7 +85,7 @@ class main():
         """
         Run the init function for the current mode
         """
-        self.rl._stop()
+        #self.rl._stop()
         
         if m == "Teleop":
             self.r.teleopInit()

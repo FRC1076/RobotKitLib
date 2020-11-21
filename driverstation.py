@@ -61,7 +61,7 @@ disabled = True
 
 
 
-
+print("starting")
 loopQuit = False
 while loopQuit == False:
 
@@ -72,6 +72,8 @@ while loopQuit == False:
     Look at the documentation for NetworkTables for some ideas.
          https://robotpy.readthedocs.io/projects/pynetworktables/en/latest/examples.html
     """
+    
+    
 
     for i in range(len(buttons)):
         buttons[i] = bool(joystick.get_button(i))
@@ -82,7 +84,7 @@ while loopQuit == False:
     xbc_nt.putNumberArray("Axis", list(axis_values))
     
     #TODO: Fix
-    btn = GUI.getButtonPressed
+    btn = GUI.getButtonPressed()
     if btn == EnableBTN and disabled == True:
         print("Enabled")
         disabled = False
