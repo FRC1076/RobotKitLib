@@ -7,6 +7,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 import robotmap
 
+LEFT_HAND = 1
+RIGHT_HAND = 0
 
 class MyRobot():
     def robotInit(self):
@@ -40,8 +42,8 @@ class MyRobot():
         """
         Configures appropriate robot settings for teleop mode
         """
-        self.left.setInverted(True)
-        self.right.setInverted(True)
+        self.left.setInverted(False)
+        self.right.setInverted(False)
         
     def deadzone(self, val, deadzone):
         if abs(val) < deadzone:
@@ -50,7 +52,7 @@ class MyRobot():
 
     def teleopPeriodic(self):
         
-        forward = self.driver.getX(0)
+        forward = self.driver.getX(LEFT_HAND)
         forward = 0.80 * self.deadzone(forward, robotmap.DEADZONE)
-        rotation_value = -0.8 * self.driver.getY(1)
+        rotation_value = -0.8 * self.driver.getY(RIGHT_HAND)
         self.myRobot.arcadeDrive(forward,rotation_value)

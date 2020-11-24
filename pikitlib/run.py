@@ -110,17 +110,8 @@ class main():
         m = pikitlib.SpeedControllerGroup(m1,m2,m3,m4)
         m.set(0)
 
-    def mainLoopThread(self):
-        """
-        Loop the mode function
-        """
-        while True:
-            if self.disabled:
-                self.disable()
-                #self.rl._stop()
-                    
-            time.sleep(0.02)
-
+   
+            
     def quit(self):
         logging.info("Quitting...")
         self.disable()
@@ -145,14 +136,16 @@ class main():
                 else:        
                     time.sleep(ts)
             else:
-                self.rl._stop
+                self.disable()
+                self.rl._stop()
+
             
 
     def debug(self):
         self.disabled = False
         self.start()
         self.setupMode("Teleop")
-        self.mainLoopThread()
+        #self.mainLoopThread()
 
     
             
@@ -166,12 +159,6 @@ if __name__ == "__main__":
     m = main()
     m.connect()
     m.start()
-    try:
-        m.mainLoopThread()
-    except KeyboardInterrupt:
-        m.quit()
-    #x = threading.Thread(target=m.mainLoopThread)
-    #x.start()
-    #m.debug()
+    
 
     
