@@ -13,14 +13,8 @@ class SpeedController():
         self.isInverted = False
 
         
-        self.achannel = (channel * 2) - 2
-        self.bchannel = self.achannel + 1
-
-        # channels (2, 3) is reveresed
-        if channel == 2:
-            temp = self.achannel
-            self.achannel = self.bchannel
-            self.bchannel = temp
+        self.achannel = channel
+        self.bchannel = channel + 1
 
     def convert(self, value, scale=2000):
         #TODO: perhaps make this math a bit better, might not be needed
