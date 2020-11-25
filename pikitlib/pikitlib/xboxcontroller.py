@@ -2,7 +2,7 @@ import enum
 from networktables import NetworkTables
 import time
 
-import xboxconfig
+from pikitlib import xboxconfig
 
 class XboxController():
 
@@ -86,8 +86,8 @@ class XboxController():
             self.axis_values[xboxconfig.LEFT_JOY_Y] = self.nt.getNumberArray("Axis", self.buttons)[xboxconfig.LEFT_JOY_Y]
             return self.axis_values[xboxconfig.LEFT_JOY_Y]
         else:
-            self.axis_values[xboxconfig.RIGHT_JOY_X] = self.nt.getNumberArray("Axis", self.buttons)[xboxconfig.RIGHT_JOY_X]
-            return self.axis_values[xboxconfig.RIGHT_JOY_X]
+            self.axis_values[xboxconfig.RIGHT_JOY_Y] = self.nt.getNumberArray("Axis", self.buttons)[xboxconfig.RIGHT_JOY_Y]
+            return self.axis_values[xboxconfig.RIGHT_JOY_Y]
 
     def getBumper(self, hand) -> bool:
         """Read the values of the bumper button on the controller.

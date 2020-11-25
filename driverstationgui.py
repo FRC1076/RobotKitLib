@@ -86,7 +86,7 @@ class DriverstationGUI():
     def update(self):
         self.redrawWindow()
         pygame.display.update()
-        self.clock.tick(30)
+        #self.clock.tick(30)
         time.sleep(0.02)
 
     def getCurrentEvents(self):

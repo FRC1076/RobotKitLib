@@ -16,11 +16,11 @@ class SpeedController():
         self.achannel = (channel * 2) - 2
         self.bchannel = self.achannel + 1
 
-        # channels (2, 3) is reveresed
         if channel == 2:
             temp = self.achannel
             self.achannel = self.bchannel
             self.bchannel = temp
+        
 
     def convert(self, value, scale=2000):
         #TODO: perhaps make this math a bit better, might not be needed
@@ -33,6 +33,7 @@ class SpeedController():
         speed = self.convert(value)
         if self.isInverted:
             speed *= -1
+
         self.current_val = speed
         
         if speed > 0:

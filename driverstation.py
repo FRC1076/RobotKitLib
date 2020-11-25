@@ -50,9 +50,9 @@ xbc_nt = NetworkTables.getTable('DriverStation/XboxController0')
 mode_nt = NetworkTables.getTable('RobotMode')
 buttons = [False] * joystick.get_numbuttons()
 
-lg = threading.Thread(target=logreceiver.main)
-lg.daemon = True
-lg.start()
+#lg = threading.Thread(target=logreceiver.main)
+#lg.daemon = True
+#lg.start()
 
 
 axis_values = [0] * joystick.get_numaxes()
@@ -61,7 +61,7 @@ disabled = True
 
 
 
-
+print("starting")
 loopQuit = False
 while loopQuit == False:
 
@@ -72,6 +72,8 @@ while loopQuit == False:
     Look at the documentation for NetworkTables for some ideas.
          https://robotpy.readthedocs.io/projects/pynetworktables/en/latest/examples.html
     """
+    
+    
 
     for i in range(len(buttons)):
         buttons[i] = bool(joystick.get_button(i))
@@ -81,8 +83,8 @@ while loopQuit == False:
     xbc_nt.putBooleanArray("Buttons", buttons)
     xbc_nt.putNumberArray("Axis", list(axis_values))
     
-
-    btn = GUI.getButtonPressed
+    #TODO: Fix
+    btn = GUI.getButtonPressed()
     if btn == EnableBTN and disabled == True:
         print("Enabled")
         disabled = False
