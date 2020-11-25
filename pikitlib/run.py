@@ -103,10 +103,10 @@ class main():
         self.r.teleopPeriodic()
         
     def disable(self):
-        m1 = pikitlib.SpeedController(0)
+        m1 = pikitlib.SpeedController(1)
         m2 = pikitlib.SpeedController(2)
-        m3 = pikitlib.SpeedController(4)
-        m4 = pikitlib.SpeedController(6)
+        m3 = pikitlib.SpeedController(3)
+        m4 = pikitlib.SpeedController(4)
         m = pikitlib.SpeedControllerGroup(m1,m2,m3,m4)
         m.set(0)
 

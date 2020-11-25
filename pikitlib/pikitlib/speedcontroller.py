@@ -13,7 +13,13 @@ class SpeedController():
         self.isInverted = False
 
         
-        self.channel = channel
+        self.achannel = (channel * 2) - 2
+        self.bchannel = self.achannel + 1
+
+        if channel == 2:
+            temp = self.achannel
+            self.achannel = self.bchannel
+            self.bchannel = temp
         
 
     def convert(self, value, scale=2000):
@@ -27,19 +33,18 @@ class SpeedController():
         speed = self.convert(value)
         if self.isInverted:
             speed *= -1
-        if self.channel == 2:
-            speed *= -1
+
         self.current_val = speed
         
         if speed > 0:
-            self.motor.setMotorPwm(self.channel, 0)
-            self.motor.setMotorPwm(self.channel + 1, speed)
+            self.motor.setMotorPwm(self.achannel, 0)
+            self.motor.setMotorPwm(self.bchannel, speed)
         elif speed < 0:
-            self.motor.setMotorPwm(self.channel + 1, 0)
-            self.motor.setMotorPwm(self.channel, abs(speed))
+            self.motor.setMotorPwm(self.bchannel, 0)
+            self.motor.setMotorPwm(self.achannel, abs(speed))
         else:
-            self.motor.setMotorPwm(self.channel, 4095)
-            self.motor.setMotorPwm(self.channel + 1, 4095)
+            self.motor.setMotorPwm(self.achannel, 4095)
+            self.motor.setMotorPwm(self.bchannel, 4095)
 
     def get(self) -> float:
         return self.current_val
