@@ -85,7 +85,6 @@ class main():
         """
         Run the init function for the current mode
         """
-        #self.rl._stop()
         
         if m == "Teleop":
             self.r.teleopInit()
@@ -137,7 +136,6 @@ class main():
                     time.sleep(ts)
             else:
                 self.disable()
-                self.rl._stop
 
             
 
