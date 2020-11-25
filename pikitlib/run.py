@@ -137,7 +137,7 @@ class main():
                     time.sleep(ts)
             else:
                 self.disable()
-                self.rl._stop()
+                self.rl._stop
 
             
 
