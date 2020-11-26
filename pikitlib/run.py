@@ -63,6 +63,8 @@ class main():
             self.setupMode(value)
         if(key == "Disabled"):
             self.disabled = value
+        if(key == "ESTOP"):
+            self.quit()
 
     def setupLogging(self):
         rootLogger = logging.getLogger('')

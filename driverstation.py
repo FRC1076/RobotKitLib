@@ -15,15 +15,6 @@ import argparse
 
 import driverstationgui
 
-EnableBTN = 0
-DisableBTN = 1
-AutonBTN = 2
-TeleopBTN = 3
-PracticeBTN = 4
-TestBTN = 5
-QuitBTN = 6
-
-
 def quit():
     mode_nt.putBoolean("Disabled", True)
     pygame.quit()
@@ -112,27 +103,21 @@ while loopQuit == False:
     xbc_nt.putNumberArray("Axis", list(axis_values))
     
     #TODO: Fix
+
+    # {"action": "Enable", "value": False}
+    # {"action": "Mode", "value": "Auton"}
     btn = GUI.getButtonPressed()
-    if btn == EnableBTN and disabled == True:
-        print("Enabled")
-        disabled = False
-    elif btn == DisableBTN and disabled == False:
-        print("Disabled")
-        disabled = True
-    elif btn == TeleopBTN and mode != "Teleop":
-        mode = "Teleop"
-        print("Starting Teleop")      
-    elif btn == AutonBTN and mode != "Auton":
-        print("Starting auton")
-        mode = "Auton"
-    elif btn == TestBTN:
-        print("Starting Test (NOT IMPLEMENTED")
-        mode = "Test"
-    elif btn == PracticeBTN:
-        print("Starting Practice (NOT IMPLEMENTED")
-        mode = "Practice"
-    elif btn == QuitBTN:
+
+    if btn["action"] == "Enable":
+        disabled = not btn["value"]
+        print("Enabled" if not disabled else "Disabled")
+    elif btn["action"] == "Mode":
+        mode = btn["value"]
+        print("Starting " + mode)
+    elif btn["action"] == "Quit":
         loopQuit = True
+    elif btn["action"] == "ESTOP":
+        mode_nt.putString("ESTOP", True)
     
     
 
@@ -143,3 +128,24 @@ while loopQuit == False:
 
 
 quit()
+
+"""
+if btn == EnableBTN:
+        print("Enabled")
+        disabled = False
+    elif btn == DisableBTN:
+        print("Disabled")
+        disabled = True
+    elif btn == TeleopBTN:
+        mode = "Teleop"
+        print("Starting Teleop")      
+    elif btn == AutonBTN:
+        print("Starting auton")
+        mode = "Auton"
+    elif btn == TestBTN:
+        print("Starting Test (NOT IMPLEMENTED")
+        mode = "Test"
+    elif btn == PracticeBTN:
+        print("Starting Practice (NOT IMPLEMENTED")
+        mode = "Practice"
+"""

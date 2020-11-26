@@ -1,12 +1,5 @@
 import pygame, sys, time    #Imports Modules
 
-EnableBTN = 0
-DisableBTN = 1
-AutonBTN = 2
-TeleopBTN = 3
-PracticeBTN = 4
-TestBTN = 5
-QuitBTN = 6
 
 class RectItem():
     def __init__(self, color, x,y,width,height,  text='', fontSize=40):
@@ -68,7 +61,7 @@ class Button(RectItem):
         return False
 
     def returnValue(self):
-        return self.rValue
+        return {"action":self.rValue[0], "value":self.rValue[1]}
 
 class DriverstationGUI():
 
@@ -87,17 +80,19 @@ class DriverstationGUI():
         self.descriptionText = RectItem((0,255,0),  0,  0, 500,  40, "PiKitLib Driverstation", 50)
         self.batteryText     = RectItem((0,255,0),300, 90, 100,  30, "Voltage:", 20)
         self.batteryVal      = RectItem((0,255,0),300,110, 100,  50, "NO DATA", 30)
-        self.enableButton    = Button((0,255,0),   50,220, 100,  90, "Enable",  rValue=EnableBTN)
-        self.disableButton   = Button((0,255,0),  160,220, 100,  90, "Disable", rValue=DisableBTN)
-        self.teleopButton    = Button((0,255,0),   50, 50, 210,  30, "TeleOperated", 30, TeleopBTN)
-        self.autonButton     = Button((0,255,0),   50, 90, 210,  30, "Autonomous", 30, AutonBTN)
-        self.practiceButton  = Button((0,255,0),   50, 130, 210,  30, "Practice (TODO)", 30, PracticeBTN)
-        self.testButton      = Button((0,255,0),   50, 170, 210,  30, "Test     (TODO)", 30, TestBTN)
+        self.enableButton    = Button((0,255,0),   50,220, 100,  90, "Enable",  rValue=["Enable", True])
+        self.disableButton   = Button((0,255,0),  160,220, 100,  90, "Disable", rValue=["Enable", False])
+        self.teleopButton    = Button((0,255,0),   50, 50, 210,  30, "TeleOperated", 30, ["Mode", "Teleop"])
+        self.autonButton     = Button((0,255,0),   50, 90, 210,  30, "Autonomous", 30, ["Mode", "Auton"])
+        self.practiceButton  = Button((0,255,0),   50,130, 210,  30, "Practice (TODO)", 30, ["Mode", "Practice"])
+        self.testButton      = Button((0,255,0),   50,170, 210,  30, "Test     (TODO)", 30, ["Mode", "Test"])
+        self.eStopButton     = Button((0,255,0),  300,180, 100,  90, "EStop",  rValue=["ESTOP", True])
         self.control_buttons = [self.testButton,self.practiceButton,
                                 self.autonButton,self.teleopButton]
         self.enable_buttons = [self.enableButton,self.disableButton]
-        self.pygame_buttons  = self.enable_buttons + self.control_buttons
-        self.exclusive_buttons = [self.enable_buttons, self.control_buttons]
+        self.pygame_buttons  = self.enable_buttons + self.control_buttons + [self.eStopButton]
+        self.exclusive_buttons = [self.enable_buttons, self.control_buttons, [self.eStopButton]]
+        
         self.texts = [self.descriptionText, self.batteryVal, self.batteryText]
     
 
@@ -147,9 +142,11 @@ class DriverstationGUI():
                                 jbtn.unselect()
                             btn.select()
                             return btn.returnValue()
+                
+                            
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                return QuitBTN   
-        return None
+                return {"action":"Quit", "value":True}  
+        return {"action":None, "value":None}
 
     
 
