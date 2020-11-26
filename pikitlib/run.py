@@ -123,12 +123,9 @@ class main():
             
     def quit(self):
         logging.info("Quitting...")
-        self.disable()
-        #self.rl.stopit()                                      
-        #logging.debug("waiting for thread to finish")
-        #self.rl.join()
         self.stop_threads = True
         self.rl.join() 
+        self.disable()
         sys.exit()
             
     def robotLoop(self, stop):
