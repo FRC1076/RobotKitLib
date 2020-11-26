@@ -29,6 +29,30 @@ def quit():
     pygame.quit()
     sys.exit()
 
+def connect():
+        """
+        Connect to robot NetworkTables server
+        """
+        NetworkTables.initialize()
+        NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
+
+
+def connectionListener(connected, info):
+    """
+    Setup the listener to detect any changes to the robotmode table
+    """
+    #print(info, "; Connected=%s" % connected)
+    logging.info("%s; Connected=%s", info, connected)
+    sd = NetworkTables.getTable("Battery")
+    sd.addEntryListener(valueChanged)
+
+def valueChanged(table, key, value, isNew):
+    """
+    Check for new changes and use them
+    """
+    #print("valueChanged: key: '%s'; value: %s; isNew: %s" % (key, value, isNew))
+    if(key == "Voltage"):
+        print("Voltage: " + str(value))
 
 # Construct an argument parser
 parser = argparse.ArgumentParser()
@@ -62,7 +86,7 @@ axis_values = [0] * joystick.get_numaxes()
 mode = ""
 disabled = True
 
-
+connect()
 
 print("starting")
 loopQuit = False
@@ -103,6 +127,8 @@ while loopQuit == False:
     elif btn == QuitBTN:
         loopQuit = True
     
+    print()
+
     mode_nt.putBoolean("Disabled", disabled)
     mode_nt.putString("Mode", mode)
     

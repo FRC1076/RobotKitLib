@@ -53,16 +53,6 @@ class main():
         logging.info("%s; Connected=%s", info, connected)
         sd = NetworkTables.getTable("RobotMode")
         sd.addEntryListener(self.valueChanged)
-
-    def setupLogging(self):
-        rootLogger = logging.getLogger('')
-        rootLogger.setLevel(logging.DEBUG)
-        socketHandler = logging.handlers.SocketHandler(str(NetworkTables.getRemoteAddress()),
-            logging.handlers.DEFAULT_TCP_LOGGING_PORT)
-        
-        rootLogger.addHandler(socketHandler)
-
-
    
     def valueChanged(self, table, key, value, isNew):
         """
@@ -73,13 +63,23 @@ class main():
             self.setupMode(value)
         if(key == "Disabled"):
             self.disabled = value
+
+    def setupLogging(self):
+        rootLogger = logging.getLogger('')
+        rootLogger.setLevel(logging.DEBUG)
+        socketHandler = logging.handlers.SocketHandler(str(NetworkTables.getRemoteAddress()),
+            logging.handlers.DEFAULT_TCP_LOGGING_PORT)
+        
+        rootLogger.addHandler(socketHandler)
         
     def start(self):    
         self.r.robotInit()
+        self.setupBatteryLogger()
         self.rl = threading.Thread(target=self.robotLoop)
         self.rl.start()
         if self.rl.is_alive():
             logging.debug("Main thread created")
+
 
     def setupMode(self, m):
         """
@@ -108,6 +108,13 @@ class main():
         m4 = pikitlib.SpeedController(4)
         m = pikitlib.SpeedControllerGroup(m1,m2,m3,m4)
         m.set(0)
+
+    def setupBatteryLogger(self):
+        self.battery_nt = NetworkTables.getTable('Battery')
+        self.ai = pikitlib.analoginput.analogInput(2)
+
+    def sendBatteryData(self):
+        self.battery_nt.putNumber("Voltage", self.ai.getVoltage())
             
     def quit(self):
         logging.info("Quitting...")
@@ -126,6 +133,7 @@ class main():
                 self.timer.stop()
                 ts = 0.02 -  self.timer.get()
                 self.timer.reset()
+                self.sendBatteryData()
                 if ts < -0.5:
                     logging.critical("Program taking too long!")
                     self.quit()
