@@ -4,9 +4,11 @@ EnableBTN = 0
 DisableBTN = 1
 AutonBTN = 2
 TeleopBTN = 3
+PracticeBTN = 4
+TestBTN = 5
 
 class RectItem():
-    def __init__(self, color, x,y,width,height, text=''):
+    def __init__(self, color, x,y,width,height, text='', fontSize=40):
         self.color = color
         self.x = x
         self.y = y
@@ -14,6 +16,7 @@ class RectItem():
         self.height = height
         self.text = text
         self.selected = False
+        self.fontSize = fontSize
 
     def isSelected(self):
         return self.selected
@@ -36,15 +39,22 @@ class RectItem():
             
         pygame.draw.rect(win, self.color, (self.x,self.y,self.width,self.height),0)
         if self.text != '':
-            font = pygame.font.SysFont('comicsans', 60)
+            font = pygame.font.SysFont('comicsans', self.fontSize)
             text = font.render(self.text, 1, (0,0,0))
+            # To center the text, add back in
+            # + (self.width/2 - text.get_width()/2)
             win.blit(text, 
-                (self.x + (self.width/2 - text.get_width()/2),
+                (self.x ,
                  self.y + (self.height/2 - text.get_height()/2)))
+
+    
  
 class Button(RectItem):
 
-    
+    def __init__(self, color, x,y,width,height, text, fontSize=40, rValue=None):
+        RectItem.__init__(self,color, x,y,width,height, text, fontSize)
+        self.rValue = rValue
+        
 
     def isOver(self, pos):
         #Pos is the mouse position or a tuple of (x,y) coordinates
@@ -55,6 +65,9 @@ class Button(RectItem):
             
         return False
 
+    def returnValue(self):
+        return self.rValue
+
 class DriverstationGUI():
 
     def __init__(self):
@@ -63,23 +76,31 @@ class DriverstationGUI():
 
     def setup(self):
         # Initialize Window
-        self.screen = pygame.display.set_mode((500, 600))
+        self.screen = pygame.display.set_mode((1600, 320))
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont("Arial", 20)
+        # lX,lY = location x, y
+        # sX,sY = size x, y  
+        # pygame setup                             lX  lY  sX   sY
+        self.descriptionText = RectItem((0,255,0), 0,  0, 500,  40, "PiKitLib Driverstation", 50)
+        self.enableButton    = Button((0,255,0),  50,220, 100,  90, "Enable",  rValue=EnableBTN)
+        self.disableButton   = Button((0,255,0), 160,220, 100,  90, "Disable", rValue=DisableBTN)
+        self.teleopButton    = Button((0,255,0),  50, 50, 210,  30, "TeleOperated", 30, TeleopBTN)
+        self.autonButton     = Button((0,255,0),  50, 90, 210,  30, "Autonomous", 30, AutonBTN)
+        self.practiceButton  = Button((0,255,0),  50, 130, 210,  30, "Practice (TODO)", 30, PracticeBTN)
+        self.testButton      = Button((0,255,0),  50, 170, 210,  30, "Test     (TODO)", 30, TestBTN)
+        self.control_buttons = [self.testButton,self.practiceButton,
+                                self.autonButton,self.teleopButton]
+        self.enable_buttons = [self.enableButton,self.disableButton]
+        self.pygame_buttons  = self.enable_buttons + self.control_buttons
+        self.exclusive_buttons = [self.enable_buttons, self.control_buttons]
+    
 
-        #pygame setup
-        self.descriptionText = RectItem((0,255,0), 0, 0, 500,40, "PiKitLib Driverstation")
-        self.enableButton = Button((0,255,0), 0,225,250,100, "Enable")
-        self.disableButton = Button((0,255,0), 250,225,250,100, "Disable")
-        self.autonButton = Button((0,255,0),     0,355,250,100, "Start Auton")
-        self.teleopButton = Button((0,255,0), 250,355,250,100, "Start Teleop")
-        self.pygame_buttons = [self.enableButton,self.disableButton,
-                               self.autonButton, self.teleopButton]
 
     def redrawWindow(self):
         self.screen.fill((255,255,255))
         for bt in self.pygame_buttons:
-            bt.draw(self.screen)
+            bt.draw(self.screen, 1)
 
         self.descriptionText.draw(self.screen)
 
@@ -110,6 +131,7 @@ class DriverstationGUI():
                             b.color = (0, 250, 0)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
+                """
                 if self.enableButton.isOver(pos):
                     self.disableButton.unselect()
                     self.enableButton.select()
@@ -125,7 +147,18 @@ class DriverstationGUI():
                 elif self.autonButton.isOver(pos):
                     self.teleopButton.unselect()
                     self.autonButton.select() 
-                    return AutonBTN
+                    return AutonBTN"""
+                for btnSet in self.exclusive_buttons:
+                    for btn in btnSet:
+                        if btn.isOver(pos) and not btn.isSelected():
+                            for jbtn in btnSet:
+                                jbtn.unselect()
+                            btn.select()
+                            return btn.returnValue()
+
+
+
+            
         return None
 
     def getQuit(self):

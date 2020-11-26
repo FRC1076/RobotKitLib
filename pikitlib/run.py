@@ -108,12 +108,11 @@ class main():
         m4 = pikitlib.SpeedController(4)
         m = pikitlib.SpeedControllerGroup(m1,m2,m3,m4)
         m.set(0)
-
-   
             
     def quit(self):
         logging.info("Quitting...")
         self.disable()
+        self.rl._stop()
         sys.exit()
             
     def robotLoop(self):
