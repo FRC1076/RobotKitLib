@@ -85,7 +85,8 @@ class DriverstationGUI():
         # sX,sY = size x, y  
         # pygame setup                             lX  lY  sX   sY
         self.descriptionText = RectItem((0,255,0),  0,  0, 500,  40, "PiKitLib Driverstation", 50)
-        self.batteryText     = RectItem((0,255,0),200,100, 200,  90, "VOLTAGE", 50)
+        self.batteryText     = RectItem((0,255,0),300, 90, 100,  30, "Voltage:", 20)
+        self.batteryVal      = RectItem((0,255,0),300,110, 100,  50, "NO DATA", 30)
         self.enableButton    = Button((0,255,0),   50,220, 100,  90, "Enable",  rValue=EnableBTN)
         self.disableButton   = Button((0,255,0),  160,220, 100,  90, "Disable", rValue=DisableBTN)
         self.teleopButton    = Button((0,255,0),   50, 50, 210,  30, "TeleOperated", 30, TeleopBTN)
@@ -97,7 +98,7 @@ class DriverstationGUI():
         self.enable_buttons = [self.enableButton,self.disableButton]
         self.pygame_buttons  = self.enable_buttons + self.control_buttons
         self.exclusive_buttons = [self.enable_buttons, self.control_buttons]
-        self.texts = [self.descriptionText, self.batteryText]
+        self.texts = [self.descriptionText, self.batteryVal, self.batteryText]
     
 
 
@@ -116,7 +117,7 @@ class DriverstationGUI():
         #time.sleep(0.02)
 
     def setBatInfoText(self, txt: str):
-        self.batteryText.setText(txt)
+        self.batteryVal.setText(txt)
 
     def getCurrentEvents(self):
         return pygame.event.get()
