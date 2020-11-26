@@ -53,6 +53,7 @@ def valueChanged(table, key, value, isNew):
     #print("valueChanged: key: '%s'; value: %s; isNew: %s" % (key, value, isNew))
     if(key == "Voltage"):
         print("Voltage: " + str(value))
+        GUI.setBatInfoText(str(value))
 
 # Construct an argument parser
 parser = argparse.ArgumentParser()
@@ -127,7 +128,7 @@ while loopQuit == False:
     elif btn == QuitBTN:
         loopQuit = True
     
-    print()
+    
 
     mode_nt.putBoolean("Disabled", disabled)
     mode_nt.putString("Mode", mode)

@@ -111,10 +111,12 @@ class main():
 
     def setupBatteryLogger(self):
         self.battery_nt = NetworkTables.getTable('Battery')
-        self.ai = pikitlib.analoginput.analogInput(2)
+        self.ai = pikitlib.analogInput(2)
+       
 
     def sendBatteryData(self):
-        self.battery_nt.putNumber("Voltage", self.ai.getVoltage())
+        self.battery_nt.putNumber("Voltage", self.ai.getVoltage() * 3)
+
             
     def quit(self):
         logging.info("Quitting...")
@@ -123,7 +125,14 @@ class main():
         sys.exit()
             
     def robotLoop(self):
+        bT = pikitlib.Timer() 
+        bT.start()
         while True:
+            
+            if bT.get() > 0.2:
+                self.sendBatteryData()
+                bT.reset()
+
             if not self.disabled:
                 self.timer.start()
                 if self.current_mode == "Auton":
@@ -132,8 +141,8 @@ class main():
                     self.teleop()
                 self.timer.stop()
                 ts = 0.02 -  self.timer.get()
+                
                 self.timer.reset()
-                self.sendBatteryData()
                 if ts < -0.5:
                     logging.critical("Program taking too long!")
                     self.quit()

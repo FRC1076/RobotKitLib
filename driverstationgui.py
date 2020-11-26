@@ -8,9 +8,8 @@ PracticeBTN = 4
 TestBTN = 5
 QuitBTN = 6
 
-
 class RectItem():
-    def __init__(self, color, x,y,width,height, text='', fontSize=40):
+    def __init__(self, color, x,y,width,height,  text='', fontSize=40):
         self.color = color
         self.x = x
         self.y = y
@@ -19,6 +18,7 @@ class RectItem():
         self.text = text
         self.selected = False
         self.fontSize = fontSize
+        
 
     def isSelected(self):
         return self.selected
@@ -84,18 +84,20 @@ class DriverstationGUI():
         # lX,lY = location x, y
         # sX,sY = size x, y  
         # pygame setup                             lX  lY  sX   sY
-        self.descriptionText = RectItem((0,255,0), 0,  0, 500,  40, "PiKitLib Driverstation", 50)
-        self.enableButton    = Button((0,255,0),  50,220, 100,  90, "Enable",  rValue=EnableBTN)
-        self.disableButton   = Button((0,255,0), 160,220, 100,  90, "Disable", rValue=DisableBTN)
-        self.teleopButton    = Button((0,255,0),  50, 50, 210,  30, "TeleOperated", 30, TeleopBTN)
-        self.autonButton     = Button((0,255,0),  50, 90, 210,  30, "Autonomous", 30, AutonBTN)
-        self.practiceButton  = Button((0,255,0),  50, 130, 210,  30, "Practice (TODO)", 30, PracticeBTN)
-        self.testButton      = Button((0,255,0),  50, 170, 210,  30, "Test     (TODO)", 30, TestBTN)
+        self.descriptionText = RectItem((0,255,0),  0,  0, 500,  40, "PiKitLib Driverstation", 50)
+        self.batteryText     = RectItem((0,255,0),200,100, 200,  90, "VOLTAGE", 50)
+        self.enableButton    = Button((0,255,0),   50,220, 100,  90, "Enable",  rValue=EnableBTN)
+        self.disableButton   = Button((0,255,0),  160,220, 100,  90, "Disable", rValue=DisableBTN)
+        self.teleopButton    = Button((0,255,0),   50, 50, 210,  30, "TeleOperated", 30, TeleopBTN)
+        self.autonButton     = Button((0,255,0),   50, 90, 210,  30, "Autonomous", 30, AutonBTN)
+        self.practiceButton  = Button((0,255,0),   50, 130, 210,  30, "Practice (TODO)", 30, PracticeBTN)
+        self.testButton      = Button((0,255,0),   50, 170, 210,  30, "Test     (TODO)", 30, TestBTN)
         self.control_buttons = [self.testButton,self.practiceButton,
                                 self.autonButton,self.teleopButton]
         self.enable_buttons = [self.enableButton,self.disableButton]
         self.pygame_buttons  = self.enable_buttons + self.control_buttons
         self.exclusive_buttons = [self.enable_buttons, self.control_buttons]
+        self.texts = [self.descriptionText, self.batteryText]
     
 
 
@@ -103,14 +105,18 @@ class DriverstationGUI():
         self.screen.fill((255,255,255))
         for bt in self.pygame_buttons:
             bt.draw(self.screen, 1)
-
-        self.descriptionText.draw(self.screen)
+        for t in self.texts:
+            t.draw(self.screen)
+        #self.descriptionText.draw(self.screen)
 
     def update(self):
         self.redrawWindow()
         pygame.display.update()
         #self.clock.tick(30)
         #time.sleep(0.02)
+
+    def setBatInfoText(self, txt: str):
+        self.batteryText.setText(txt)
 
     def getCurrentEvents(self):
         return pygame.event.get()
