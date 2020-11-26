@@ -6,6 +6,8 @@ AutonBTN = 2
 TeleopBTN = 3
 PracticeBTN = 4
 TestBTN = 5
+QuitBTN = 6
+
 
 class RectItem():
     def __init__(self, color, x,y,width,height, text='', fontSize=40):
@@ -76,7 +78,7 @@ class DriverstationGUI():
 
     def setup(self):
         # Initialize Window
-        self.screen = pygame.display.set_mode((1600, 320))
+        self.screen = pygame.display.set_mode((500, 320))
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont("Arial", 20)
         # lX,lY = location x, y
@@ -108,7 +110,7 @@ class DriverstationGUI():
         self.redrawWindow()
         pygame.display.update()
         #self.clock.tick(30)
-        time.sleep(0.02)
+        #time.sleep(0.02)
 
     def getCurrentEvents(self):
         return pygame.event.get()
@@ -131,23 +133,6 @@ class DriverstationGUI():
                             b.color = (0, 250, 0)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                """
-                if self.enableButton.isOver(pos):
-                    self.disableButton.unselect()
-                    self.enableButton.select()
-                    return EnableBTN
-                elif self.disableButton.isOver(pos):
-                    self.disableButton.select()
-                    self.enableButton.unselect()
-                    return DisableBTN
-                elif self.teleopButton.isOver(pos):
-                    self.teleopButton.select()
-                    self.autonButton.unselect()
-                    return TeleopBTN
-                elif self.autonButton.isOver(pos):
-                    self.teleopButton.unselect()
-                    self.autonButton.select() 
-                    return AutonBTN"""
                 for btnSet in self.exclusive_buttons:
                     for btn in btnSet:
                         if btn.isOver(pos) and not btn.isSelected():
@@ -155,17 +140,10 @@ class DriverstationGUI():
                                 jbtn.unselect()
                             btn.select()
                             return btn.returnValue()
-
-
-
-            
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                return QuitBTN   
         return None
 
-    def getQuit(self):
-        for event in self.getCurrentEvents():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                return True
-        return False
     
 
     

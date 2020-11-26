@@ -19,6 +19,9 @@ EnableBTN = 0
 DisableBTN = 1
 AutonBTN = 2
 TeleopBTN = 3
+PracticeBTN = 4
+TestBTN = 5
+QuitBTN = 6
 
 
 def quit():
@@ -97,11 +100,9 @@ while loopQuit == False:
     elif btn == AutonBTN and mode != "Auton":
         print("Starting auton")
         mode = "Auton"
-        
-    if GUI.getQuit():
+    elif btn == QuitBTN:
         loopQuit = True
-        quit()
-
+    
     mode_nt.putBoolean("Disabled", disabled)
     mode_nt.putString("Mode", mode)
     
