@@ -43,7 +43,7 @@ def valueChanged(table, key, value, isNew):
     """
     #print("valueChanged: key: '%s'; value: %s; isNew: %s" % (key, value, isNew))
     if(key == "Voltage"):
-        print("Voltage: " + str(value))
+        #print("Voltage: " + str(value))
         GUI.setBatInfoText(str(value)[:4])
 
 # Construct an argument parser
@@ -128,24 +128,3 @@ while loopQuit == False:
 
 
 quit()
-
-"""
-if btn == EnableBTN:
-        print("Enabled")
-        disabled = False
-    elif btn == DisableBTN:
-        print("Disabled")
-        disabled = True
-    elif btn == TeleopBTN:
-        mode = "Teleop"
-        print("Starting Teleop")      
-    elif btn == AutonBTN:
-        print("Starting auton")
-        mode = "Auton"
-    elif btn == TestBTN:
-        print("Starting Test (NOT IMPLEMENTED")
-        mode = "Test"
-    elif btn == PracticeBTN:
-        print("Starting Practice (NOT IMPLEMENTED")
-        mode = "Practice"
-"""

@@ -20,6 +20,60 @@ import logging.handlers
 
 logging.basicConfig(level=logging.DEBUG)
 
+class StoppableThread(threading.Thread):
+    """Thread class with a stop() method. The thread itself has to check
+    regularly for the stopped() condition."""
+
+    def __init__(self):
+        print( "base init", file=sys.stderr )
+        super(StoppableThread, self).__init__()
+        self._stopper = threading.Event()          
+
+    def stopit(self):                            
+        print( "base stop()", file=sys.stderr )
+        self._stopper.set()                        
+
+    def stopped(self):
+        return self._stopper.is_set()      
+
+class mainRobotThread(StoppableThread):
+    import time
+
+    def __init__(self):
+        StoppableThread.__init__(self)
+        print("Starting Main Robot Thread")
+        self.m = main()
+        self.timer = pikitlib.Timer()
+
+    def run(self):
+        print("Thread Running")
+        bT = pikitlib.Timer() 
+        bT.start()   
+        while not self.stopped():
+            if bT.get() > 0.2:
+                self.m.sendBatteryData()
+                bT.reset()
+
+            if not self.m.disabled:
+                self.timer.start()
+                if self.m.current_mode == "Auton":
+                    self.m.auton()
+                elif self.m.current_mode == "Teleop":
+                    self.m.teleop()
+                self.timer.stop()
+                ts = 0.02 -  self.timer.get()
+                
+                self.timer.reset()
+                if ts < -0.5:
+                    logging.critical("Program taking too long!")
+                    self.m.quit()
+                elif ts < 0:
+                    logging.warning("%s has slipped by %s miliseconds!", self.m.current_mode, ts * -1000)
+                else:        
+                    time.sleep(ts)
+            else:
+                self.m.disable()
+        print("Quiting...")
 
 
 class main():
@@ -77,7 +131,8 @@ class main():
     def start(self):    
         self.r.robotInit()
         self.setupBatteryLogger()
-        self.rl = threading.Thread(target=self.robotLoop)
+        #self.rl = threading.Thread(target=self.robotLoop)
+        self.rl = mainRobotThread()
         self.rl.start()
         if self.rl.is_alive():
             logging.debug("Main thread created")
@@ -123,7 +178,10 @@ class main():
     def quit(self):
         logging.info("Quitting...")
         self.disable()
-        self.rl._stop()
+        self.rl.stopit()                                      
+        logging.debug("waiting for thread to finish")
+        self.rl.join()
+
         sys.exit()
             
     def robotLoop(self):
