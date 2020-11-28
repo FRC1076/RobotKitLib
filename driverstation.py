@@ -58,10 +58,23 @@ NetworkTables.initialize(ip)
 GUI = driverstationgui.DriverstationGUI()
 GUI.setup() 
 
+
 pygame.joystick.init()
 # Assume only 1 joystick for now
 joystick = pygame.joystick.Joystick(0)
-joystick.init()#Initializes Joystick
+joystick.init()
+
+
+def tryToSetupJoystick():
+    try:
+        pygame.joystick.init()
+        # Assume only 1 joystick for now
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()#Initializes Joystick
+    except pygame.error:
+        joystick = None
+
+
 
 
 # save reference to table for each xbox controller
@@ -102,7 +115,21 @@ while loopQuit == False:
     xbc_nt.putBooleanArray("Buttons", buttons)
     xbc_nt.putNumberArray("Axis", list(axis_values))
     
-    #TODO: Fix
+    
+
+
+    #Update indicators
+    hasCommunication = True
+    hasCode = True
+    hasJoysticks = True
+    
+
+    GUI.updateIndicator(0, hasCommunication)
+    GUI.updateIndicator(1, hasCode)
+    GUI.updateIndicator(2, hasJoysticks)
+    
+    
+
 
     # {"action": "Enable", "value": False}
     # {"action": "Mode", "value": "Auton"}
