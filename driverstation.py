@@ -10,7 +10,9 @@ import threading
 import logreceiver
 import ctypes
 import logging
-
+import socket
+import tqdm
+import os
 import argparse
 
 import driverstationgui
@@ -92,6 +94,39 @@ def tryToSetupJoystick():
     except pygame.error:
         hasJoysticks = False
 
+def sendRobotCode(host):
+    SEPARATOR = "/"
+    BUFFER_SIZE = 4096 
+    port = 5001
+
+    filename = "robot.py"
+    try:
+        filesize = os.path.getsize(filename)
+    except FileNotFoundError:
+        logging.critical("ERROR: " + filename + " not found!")
+        
+    s = socket.socket()
+
+    print(f"[+] Connecting to {host}:{port}")
+    s.connect((host, port))
+    print("[+] Connected.")
+
+    s.send(f"{filename}{SEPARATOR}{filesize}".encode())
+
+    progress = tqdm.tqdm(range(filesize), f"Sending {filename}", unit="B", unit_scale=True, unit_divisor=1024)
+    with open(filename, "rb") as f:
+        for _ in progress:
+            bytes_read = f.read(BUFFER_SIZE)
+            if not bytes_read:
+                break
+
+            s.sendall(bytes_read)
+
+            progress.update(len(bytes_read))
+
+    s.close()
+
+
 tryToSetupJoystick()
 
 
@@ -127,7 +162,7 @@ while loopQuit == False:
 
     tryToSetupJoystick()
     
-    if status_nt.getBoolean(("Code")):
+    if status_nt.getBoolean(("Code"), False):
         hasCode = True
 
 
@@ -180,6 +215,11 @@ while loopQuit == False:
         loopQuit = True
     elif btn["action"] == "ESTOP":
         mode_nt.putString("ESTOP", True)
+    elif btn["action"] == "Code":
+        if hasCommunication:
+            sendRobotCode(NetworkTables.getRemoteAddress())
+        else:
+            logging.warning("Cant send code, no connection!")
     
     
     if hasCommunication and hasCode:

@@ -7,11 +7,11 @@ import time
 import threading
 
 #Robot
-import robot
+#import robot
 import pikitlib
 from networktables import NetworkTables
 
-
+from code_receiver import codeReceiver
 
 #Networking and Logging
 import logging
@@ -29,6 +29,7 @@ class main():
         self.r = None
         self.current_mode = ""
         self.disabled = True
+        
         
         
         self.timer = pikitlib.Timer()
@@ -57,6 +58,8 @@ class main():
         """
         #print(info, "; Connected=%s" % connected)
         logging.info("%s; Connected=%s", info, connected)
+        self.cr = codeReceiver(NetworkTables.getRemoteAddress(), 5001)
+        self.cr.setupConnection()
         sd = NetworkTables.getTable("RobotMode")
         sd.addEntryListener(self.valueChanged)
    
@@ -80,7 +83,8 @@ class main():
         
         rootLogger.addHandler(socketHandler)
         
-    def start(self):    
+    def start(self):
+           
         self.r.robotInit()
         self.setupBatteryLogger()
         #self.rl = threading.Thread(target=self.robotLoop)
@@ -90,6 +94,8 @@ class main():
         if self.rl.is_alive():
             logging.debug("Main thread created")
 
+    
+
     def connectionLoop(self):
         T = pikitlib.Timer() 
         T.start()
@@ -97,6 +103,8 @@ class main():
         while not self.tryToSetupCode(): 
             if T.get() > 0.3:
                 self.status_nt.putBoolean("Code", False)
+                self.cr.receiveFile()
+
                 T.reset()
         self.status_nt.putBoolean("Code", True)
         self.start()
