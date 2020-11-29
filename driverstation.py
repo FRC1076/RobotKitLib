@@ -74,7 +74,7 @@ GUI.setup()
 updateFromRobot = False
 
 hasCommunication = False
-hasCode = True #TODO: make some way to check for this
+hasCode = False #TODO: make some way to check for this
 hasJoysticks = False
 
 global joystick
