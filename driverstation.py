@@ -43,11 +43,6 @@ def valueChanged(table, key, value, isNew):
     """
     Check for new changes and use them
     """
-    #print("valueChanged: key: '%s'; value: %s; isNew: %s" % (key, value, isNew))
-
-    
-
-    
     global updateFromRobot
 
     if(key == "Voltage"):
@@ -55,7 +50,6 @@ def valueChanged(table, key, value, isNew):
         bV = str(value)[:4]
         GUI.setBatInfoText(bV)
 
-        #print("Voltage: " + str(value))
         
 
 # Construct an argument parser
@@ -104,7 +98,7 @@ tryToSetupJoystick()
 # save reference to table for each xbox controller
 xbc_nt = NetworkTables.getTable('DriverStation/XboxController0')
 mode_nt = NetworkTables.getTable('RobotMode')
-
+status_nt = NetworkTables.getTable('Status')
 
 #lg = threading.Thread(target=logreceiver.main)
 #lg.daemon = True
@@ -133,12 +127,11 @@ while loopQuit == False:
 
     tryToSetupJoystick()
     
-    if hasCommunication:
+    if status_nt.getBoolean(("Code")):
         hasCode = True
-        #TODO: Make a better way to check this
 
 
-    if hasCommunication and hasJoysticks:
+    if hasCommunication and hasJoysticks and hasCode:
         for i in range(len(buttons)):
             buttons[i] = bool(joystick.get_button(i))
         for j in range(len(axis_values)):
@@ -189,7 +182,7 @@ while loopQuit == False:
         mode_nt.putString("ESTOP", True)
     
     
-    if hasCommunication:
+    if hasCommunication and hasCode:
         mode_nt.putBoolean("Disabled", disabled)
         mode_nt.putString("Mode", mode)
 

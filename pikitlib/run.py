@@ -26,15 +26,22 @@ class main():
         """
         Construct robot disconnect, and powered on
         """
-        self.r = robot.MyRobot()
+        self.r = None
         self.current_mode = ""
         self.disabled = True
         
-
+        
         self.timer = pikitlib.Timer()
 
         
-
+    def tryToSetupCode(self):
+        try:
+            import robot
+            self.r = robot.MyRobot()
+            return True
+        except NameError:
+            return False
+        
         
     def connect(self):
         """
@@ -83,6 +90,17 @@ class main():
         if self.rl.is_alive():
             logging.debug("Main thread created")
 
+    def connectionLoop(self):
+        T = pikitlib.Timer() 
+        T.start()
+        self.status_nt = NetworkTables.getTable("Status")
+        while not self.tryToSetupCode(): 
+            if T.get() > 0.3:
+                self.status_nt.putBoolean("Code", False)
+                T.reset()
+        self.status_nt.putBoolean("Code", True)
+        self.start()
+            
 
     def setupMode(self, m):
         """
@@ -95,8 +113,6 @@ class main():
             self.r.autonomousInit()
 
         self.current_mode = m
-       
-        #self.rl.start()
 
     def auton(self):
         self.r.autonomousPeriodic()
@@ -177,7 +193,8 @@ if __name__ == "__main__":
     
     m = main()
     m.connect()
-    m.start()
+    #m.start()
+    m.connectionLoop()
     
 
     
