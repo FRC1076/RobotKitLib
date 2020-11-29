@@ -133,6 +133,11 @@ while loopQuit == False:
 
     tryToSetupJoystick()
     
+    if hasCommunication:
+        hasCode = True
+        #TODO: Make a better way to check this
+
+
     if hasCommunication and hasJoysticks:
         for i in range(len(buttons)):
             buttons[i] = bool(joystick.get_button(i))
