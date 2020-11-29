@@ -34,6 +34,8 @@ def connectionListener(connected, info):
     """
     #print(info, "; Connected=%s" % connected)
     logging.info("%s; Connected=%s", info, connected)
+    global hasCommunication
+    hasCommunication = True
     sd = NetworkTables.getTable("Battery")
     sd.addEntryListener(valueChanged)
 
@@ -42,9 +44,19 @@ def valueChanged(table, key, value, isNew):
     Check for new changes and use them
     """
     #print("valueChanged: key: '%s'; value: %s; isNew: %s" % (key, value, isNew))
+
+    
+
+    
+    global updateFromRobot
+
     if(key == "Voltage"):
+        updateFromRobot = True
+        bV = str(value)[:4]
+        GUI.setBatInfoText(bV)
+
         #print("Voltage: " + str(value))
-        GUI.setBatInfoText(str(value)[:4])
+        
 
 # Construct an argument parser
 parser = argparse.ArgumentParser()
@@ -59,35 +71,46 @@ GUI = driverstationgui.DriverstationGUI()
 GUI.setup() 
 
 
-pygame.joystick.init()
-# Assume only 1 joystick for now
-joystick = pygame.joystick.Joystick(0)
-joystick.init()
+updateFromRobot = False
 
+hasCommunication = False
+hasCode = True #TODO: make some way to check for this
+hasJoysticks = False
+
+global joystick
+joystick = None
+
+buttons = [False] * 11
+axis_values = [0] * 6
 
 def tryToSetupJoystick():
+    global joystick, hasJoysticks, buttons, axis_values
     try:
         pygame.joystick.init()
         # Assume only 1 joystick for now
+        
         joystick = pygame.joystick.Joystick(0)
         joystick.init()#Initializes Joystick
+        buttons = [False] * joystick.get_numbuttons()
+        axis_values = [0] * joystick.get_numaxes()
+        hasJoysticks = True
+        
     except pygame.error:
-        joystick = None
+        hasJoysticks = False
 
-
+tryToSetupJoystick()
 
 
 # save reference to table for each xbox controller
 xbc_nt = NetworkTables.getTable('DriverStation/XboxController0')
 mode_nt = NetworkTables.getTable('RobotMode')
-buttons = [False] * joystick.get_numbuttons()
+
 
 #lg = threading.Thread(target=logreceiver.main)
 #lg.daemon = True
 #lg.start()
 
 
-axis_values = [0] * joystick.get_numaxes()
 mode = ""
 disabled = True
 
@@ -95,6 +118,9 @@ connect()
 
 print("starting")
 loopQuit = False
+
+a = time.perf_counter()
+b = time.perf_counter()
 while loopQuit == False:
 
     """
@@ -104,24 +130,35 @@ while loopQuit == False:
     Look at the documentation for NetworkTables for some ideas.
          https://robotpy.readthedocs.io/projects/pynetworktables/en/latest/examples.html
     """
-    
-    
 
-    for i in range(len(buttons)):
-        buttons[i] = bool(joystick.get_button(i))
-    for j in range(len(axis_values)):
-        axis_values[j] = joystick.get_axis(j)
+    tryToSetupJoystick()
+    
+    if hasCommunication and hasJoysticks:
+        for i in range(len(buttons)):
+            buttons[i] = bool(joystick.get_button(i))
+        for j in range(len(axis_values)):
+            axis_values[j] = joystick.get_axis(j)
 
-    xbc_nt.putBooleanArray("Buttons", buttons)
-    xbc_nt.putNumberArray("Axis", list(axis_values))
+        xbc_nt.putBooleanArray("Buttons", buttons)
+        xbc_nt.putNumberArray("Axis", list(axis_values))
+
+    
+    if time.perf_counter() - b > 1:
+        b = time.perf_counter()
+        updateFromRobot = False
+
+
+    if time.perf_counter() - a > 2:
+        a = time.perf_counter()
+        if not updateFromRobot:
+            hasCommunication = False
+    
     
     
 
 
     #Update indicators
-    hasCommunication = True
-    hasCode = True
-    hasJoysticks = True
+    
     
 
     GUI.updateIndicator(0, hasCommunication)
@@ -147,10 +184,10 @@ while loopQuit == False:
         mode_nt.putString("ESTOP", True)
     
     
+    if hasCommunication:
+        mode_nt.putBoolean("Disabled", disabled)
+        mode_nt.putString("Mode", mode)
 
-    mode_nt.putBoolean("Disabled", disabled)
-    mode_nt.putString("Mode", mode)
-    
     GUI.update()
 
 
