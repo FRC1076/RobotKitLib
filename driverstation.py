@@ -38,6 +38,11 @@ def connectionListener(connected, info):
     logging.info("%s; Connected=%s", info, connected)
     global hasCommunication
     hasCommunication = True
+
+    global s
+    s = socket.socket()
+
+    
     sd = NetworkTables.getTable("Battery")
     sd.addEntryListener(valueChanged)
 
@@ -62,7 +67,7 @@ ip = args.ip_addr
 print(ip)
 NetworkTables.initialize(ip)
 
-
+s = ""
 GUI = driverstationgui.DriverstationGUI()
 GUI.setup() 
 
@@ -97,19 +102,22 @@ def tryToSetupJoystick():
 def sendRobotCode(host):
     SEPARATOR = "/"
     BUFFER_SIZE = 4096 
-    port = 5001
+    port = 5002
+
+    global s, connected
 
     filename = "robot.py"
     try:
         filesize = os.path.getsize(filename)
     except FileNotFoundError:
         logging.critical("ERROR: " + filename + " not found!")
-        
-    s = socket.socket()
-
-    print(f"[+] Connecting to {host}:{port}")
-    s.connect((host, port))
-    print("[+] Connected.")
+        return
+    
+    if not connected:
+        print(f"[+] Connecting to {host}:{port}")
+        s.connect((host, port))
+        print("[+] Connected.")
+        connected = True
 
     s.send(f"{filename}{SEPARATOR}{filesize}".encode())
 
@@ -142,6 +150,7 @@ status_nt = NetworkTables.getTable('Status')
 
 mode = ""
 disabled = True
+connected = False
 
 connect()
 
@@ -176,15 +185,17 @@ while loopQuit == False:
         xbc_nt.putNumberArray("Axis", list(axis_values))
 
     
-    if time.perf_counter() - b > 1:
+    if time.perf_counter() - b > 2.5:
         b = time.perf_counter()
         updateFromRobot = False
+    #print(updateFromRobot)
 
-
-    if time.perf_counter() - a > 2:
+    if time.perf_counter() - a > 3:
         a = time.perf_counter()
         if not updateFromRobot:
             hasCommunication = False
+        else:
+            hasCommunication = True
     
     
     
@@ -216,10 +227,10 @@ while loopQuit == False:
     elif btn["action"] == "ESTOP":
         mode_nt.putString("ESTOP", True)
     elif btn["action"] == "Code":
-        if hasCommunication:
-            sendRobotCode(NetworkTables.getRemoteAddress())
-        else:
-            logging.warning("Cant send code, no connection!")
+        #if hasCommunication:
+        sendRobotCode(NetworkTables.getRemoteAddress())
+        #else:
+        #    logging.warning("Cant send code, no connection!")
     
     
     if hasCommunication and hasCode:

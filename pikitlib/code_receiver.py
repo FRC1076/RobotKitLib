@@ -10,7 +10,7 @@ class codeReceiver():
         self.port = port
 
         self.buffer_size = 4096
-        self.speperator = "/"
+        self.separator = "/"
 
         self.s = socket.socket()
         
@@ -28,7 +28,7 @@ class codeReceiver():
         
     def receiveFile(self):
         received = self.client_socket.recv(self.buffer_size).decode()
-        filename, filesize = received.split(self.speperator)
+        filename, filesize = received.split(self.separator)
 
         self.filename = os.path.basename(filename)
 
@@ -46,3 +46,8 @@ class codeReceiver():
                 f.write(bytes_read)
 
                 progress.update(len(bytes_read))
+        
+
+    def close(self)
+        self.client_socket.close()
+        self.s.close()

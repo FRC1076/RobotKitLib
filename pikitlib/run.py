@@ -30,7 +30,7 @@ class main():
         self.current_mode = ""
         self.disabled = True
         
-        
+        self.cr = None
         
         self.timer = pikitlib.Timer()
 
@@ -40,7 +40,7 @@ class main():
             import robot
             self.r = robot.MyRobot()
             return True
-        except NameError:
+        except ModuleNotFoundError:
             return False
         
         
@@ -57,9 +57,10 @@ class main():
         Setup the listener to detect any changes to the robotmode table
         """
         #print(info, "; Connected=%s" % connected)
+        
         logging.info("%s; Connected=%s", info, connected)
-        self.cr = codeReceiver(NetworkTables.getRemoteAddress(), 5001)
-        self.cr.setupConnection()
+        #self.cr = codeReceiver("0.0.0.0", 5001)
+        #self.cr.setupConnection()
         sd = NetworkTables.getTable("RobotMode")
         sd.addEntryListener(self.valueChanged)
    
@@ -99,13 +100,17 @@ class main():
     def connectionLoop(self):
         T = pikitlib.Timer() 
         T.start()
+        self.cr = codeReceiver("0.0.0.0", 5001)
+        self.cr.setupConnection()
         self.status_nt = NetworkTables.getTable("Status")
         while not self.tryToSetupCode(): 
             if T.get() > 0.3:
                 self.status_nt.putBoolean("Code", False)
-                self.cr.receiveFile()
+                if self.cr is not None:
+                    self.cr.receiveFile()
 
                 T.reset()
+       
         self.status_nt.putBoolean("Code", True)
         self.start()
             
@@ -147,6 +152,7 @@ class main():
             
     def quit(self):
         logging.info("Quitting...")
+        self.cr.close()
         self.stop_threads = True
         self.rl.join() 
         self.disable()
