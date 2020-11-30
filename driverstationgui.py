@@ -1,5 +1,5 @@
 import pygame, sys, time    #Imports Modules
-
+# pylint: disable=no-member
 
 class RectItem():
     def __init__(self, color, x,y,width,height,  text='', fontSize=40, outline=None):
@@ -125,7 +125,7 @@ class DriverstationGUI():
         self.enable_buttons = [self.enableButton,self.disableButton]
         
         self.exclusive_buttons = [self.enable_buttons, self.control_buttons]
-        self.regular_buttons = [self.sendCodeButton]
+        #self.regular_buttons = [self.sendCodeButton]
         self.pygame_buttons  = self.enable_buttons + self.control_buttons + self.regular_buttons
         self.texts = [self.descriptionText, self.batteryVal, self.batteryText, self.commText,
                       self.robotCodeText, self.joystickText, self.joyIndicator, self.codeIndicator,
@@ -181,9 +181,9 @@ class DriverstationGUI():
                                 jbtn.unselect()
                             btn.select()
                             return btn.returnValue()
-                for btn in self.regular_buttons:
-                    if btn.isOver(pos):
-                        return btn.returnValue()
+                #for btn in self.regular_buttons:
+                #    if btn.isOver(pos):
+                #        return btn.returnValue()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return {"action":"Quit", "value":True}

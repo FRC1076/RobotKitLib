@@ -1,6 +1,10 @@
 import socket
-import tqdm
+import threading
+
+
+import buffer
 import os
+
 import argparse
 import sys
 import logging
@@ -13,35 +17,27 @@ parser.add_argument("ip_addr", help="IP address of the server")
 args = parser.parse_args()
 host = args.ip_addr
 
-#host = "localhost"
-
 port = 5001
 
-filename = "robot.py"
-
-try:
-    filesize = os.path.getsize(filename)
-except FileNotFoundError:
-    logging.critical("ERROR: " + filename + " not found!")
-    sys.exit()
-
-s = socket.socket()
-
-print(f"[+] Connecting to {host}:{port}")
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((host, port))
-print("[+] Connected.")
 
-s.send(f"{filename}{SEPARATOR}{filesize}".encode())
+with s:
+    sbuf = buffer.Buffer(s)
 
-progress = tqdm.tqdm(range(filesize), f"Sending {filename}", unit="B", unit_scale=True, unit_divisor=1024)
-with open(filename, "rb") as f:
-    for _ in progress:
-        bytes_read = f.read(BUFFER_SIZE)
-        if not bytes_read:
-            break
+    hash_type = input('Enter hash type: ')
 
-        s.sendall(bytes_read)
+    files = input('Enter file(s) to send: ')
+    files_to_send = files.split()
 
-        progress.update(len(bytes_read))
+    for file_name in files_to_send:
+        print(file_name)
+        sbuf.put_utf8(hash_type)
+        sbuf.put_utf8(file_name)
 
-s.close()
+        file_size = os.path.getsize(file_name)
+        sbuf.put_utf8(str(file_size))
+
+        with open(file_name, 'rb') as f:
+            sbuf.put_bytes(f.read())
+        print('File Sent')

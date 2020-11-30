@@ -1,4 +1,4 @@
-
+# pylint: disable=no-member
 #Pygame Imports
 import sys, time    #Imports Modules
 import pygame
@@ -99,6 +99,8 @@ def tryToSetupJoystick():
     except pygame.error:
         hasJoysticks = False
 
+
+"""
 def sendRobotCode(host):
     SEPARATOR = "/"
     BUFFER_SIZE = 4096 
@@ -133,7 +135,7 @@ def sendRobotCode(host):
             progress.update(len(bytes_read))
 
     s.close()
-
+"""
 
 tryToSetupJoystick()
 
@@ -226,9 +228,9 @@ while loopQuit == False:
         loopQuit = True
     elif btn["action"] == "ESTOP":
         mode_nt.putString("ESTOP", True)
-    elif btn["action"] == "Code":
+    #elif btn["action"] == "Code":
         #if hasCommunication:
-        sendRobotCode(NetworkTables.getRemoteAddress())
+    #    sendRobotCode(NetworkTables.getRemoteAddress())
         #else:
         #    logging.warning("Cant send code, no connection!")
     

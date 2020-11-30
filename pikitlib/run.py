@@ -13,6 +13,11 @@ from networktables import NetworkTables
 
 from code_receiver import codeReceiver
 
+import socket
+import os
+
+import buffer
+
 #Networking and Logging
 import logging
 import logging.handlers
@@ -33,6 +38,8 @@ class main():
         self.cr = None
         
         self.timer = pikitlib.Timer()
+
+        self.isRunning = False
 
         
     def tryToSetupCode(self):
@@ -85,7 +92,7 @@ class main():
         rootLogger.addHandler(socketHandler)
         
     def start(self):
-           
+        self.isRunning = True
         self.r.robotInit()
         self.setupBatteryLogger()
         #self.rl = threading.Thread(target=self.robotLoop)
@@ -98,21 +105,24 @@ class main():
     
 
     def connectionLoop(self):
-        T = pikitlib.Timer() 
-        T.start()
-        self.cr = codeReceiver("0.0.0.0", 5001)
+        self.cr = codeReceiver()
         self.cr.setupConnection()
         self.status_nt = NetworkTables.getTable("Status")
-        while not self.tryToSetupCode(): 
-            if T.get() > 0.3:
-                self.status_nt.putBoolean("Code", False)
-                if self.cr is not None:
-                    self.cr.receiveFile()
 
-                T.reset()
-       
-        self.status_nt.putBoolean("Code", True)
-        self.start()
+        if not self.isRunning:
+            if self.tryToSetupCode():
+                self.start()
+
+
+        T = pikitlib.Timer()
+        T.start()
+        while True:
+            if T.get() > 0.2:
+                if self.cr.receiveFile():
+                    self.status_nt.putBoolean("Code", self.tryToSetupCode())
+                    self.stop()
+                    self.start()
+                    T.reset()
             
 
     def setupMode(self, m):
@@ -149,10 +159,15 @@ class main():
     def sendBatteryData(self):
         self.battery_nt.putNumber("Voltage", self.ai.getVoltage() * 3)
 
+    def stop(self):
+        self.isRunning = False
+        logging.info("Quitting...")
+        self.stop_threads = True
+        self.rl.join() 
+        self.disable()
             
     def quit(self):
         logging.info("Quitting...")
-        self.cr.close()
         self.stop_threads = True
         self.rl.join() 
         self.disable()
@@ -208,7 +223,8 @@ if __name__ == "__main__":
     m = main()
     m.connect()
     #m.start()
-    m.connectionLoop()
+    clThread = threading.Thread(target=m.connectionLoop)
+    clThread.start()
     
 
     
