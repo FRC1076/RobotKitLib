@@ -7,7 +7,7 @@ cmd = "python testing.py"
 
 a = subprocess.check_output("pwd").decode("utf8")
 b = a[0:len(a)-1] + "/" + "testing.py"
-r = subprocess.call(b, shell=True)
-
+r = subprocess.Popen(b, shell=True)
+rc = r.returncode
 print("a")
-print("Code = " + str(r))
+print("Code = " + str(rc))

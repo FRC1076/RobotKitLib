@@ -25,15 +25,9 @@ a = subprocess.check_output("pwd").decode("utf8")
 b = a[0:len(a)-1] + "/" + "run.py"
 
 
-p = subprocess.Popen(b, shell=True)
+p = subprocess.Popen(["python", b], shell=False, stdout=subprocess.PIPE, bufsize=0)
 
 code = True
-
-
-print(p.returncode)
-if p.returncode == 1:
-    print("No code on robot!")
-    code = False
 
 
 s = socket.socket()
