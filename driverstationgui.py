@@ -126,7 +126,7 @@ class DriverstationGUI():
         
         self.exclusive_buttons = [self.enable_buttons, self.control_buttons]
         #self.regular_buttons = [self.sendCodeButton]
-        self.pygame_buttons  = self.enable_buttons + self.control_buttons + self.regular_buttons
+        self.pygame_buttons  = self.enable_buttons + self.control_buttons
         self.texts = [self.descriptionText, self.batteryVal, self.batteryText, self.commText,
                       self.robotCodeText, self.joystickText, self.joyIndicator, self.codeIndicator,
                       self.commIndicator]

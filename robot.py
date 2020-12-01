@@ -24,12 +24,12 @@ class MyRobot():
 
         self.myRobot = pikitlib.DifferentialDrive(self.left, self.right)
        # self.myRobot.setExpiration(0.1)
-
+        print("Robot INIT")
         self.DEADZONE = 0.4
 
         #self.buzz = pikitlib.IllegalBuzzer()
 
-        NetworkTables.initialize()
+        
         self.driver = pikitlib.XboxController(0)
 
     def autonomousInit(self):

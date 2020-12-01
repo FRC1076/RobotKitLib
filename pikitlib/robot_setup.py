@@ -1,14 +1,3 @@
-"""
-when run: 
-start run.py
-regularly look for new code
-if new code,
-kill run.py
-copy files over
-run run.py
-"""
-
-
 import socket
 import tqdm
 import os
@@ -19,13 +8,10 @@ import buffer
 import subprocess
 
 
-
-
 a = subprocess.check_output("pwd").decode("utf8")
 b = a[0:len(a)-1] + "/" + "run.py"
 
-
-p = subprocess.Popen(["python", b], shell=False, stdout=subprocess.PIPE, bufsize=0)
+p = subprocess.Popen(["python", b], shell=False)
 
 code = True
 
@@ -35,9 +21,7 @@ s.bind(('', 2345))
 
 s.listen(10)
 print("Waiting for a connection.....")
-conn, addr = s.accept()
-print("Got a connection from ", addr)
-connbuf = buffer.Buffer(conn)
+
 
 while True:
 
@@ -57,7 +41,7 @@ while True:
         if not file_name:
             newCode = False
             break
-        file_name = os.path.join('uploads',file_name)
+        #file_name = os.path.join('uploads',file_name)
         print('file name: ', file_name)
 
         file_size = int(connbuf.get_utf8())
@@ -79,7 +63,7 @@ while True:
     
     if newCode:
         p.kill()
-        p = subprocess.Popen(b, shell=True)
+        p = subprocess.Popen(["python", b], shell=False)
 
         
 

@@ -97,37 +97,16 @@ class main():
         self.status_nt.putBoolean("Code", True)
         #self.rl = threading.Thread(target=self.robotLoop)
         self.stop_threads = False
-        self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, )) 
+        self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, ))
         self.rl.start() 
+        print("created")
         if self.rl.is_alive():
             logging.debug("Main thread created")
 
     
     def broadcastNoCode(self):
-        n = NetworkTables.getTable("Status")
         self.status_nt.putBoolean("Code", False)
 
-    """
-    def connectionLoop(self):
-        self.cr = codeReceiver()
-        self.cr.setupConnection()
-        self.status_nt = NetworkTables.getTable("Status")
-
-        if not self.isRunning:
-            if self.tryToSetupCode():
-                self.start()
-
-
-        T = pikitlib.Timer()
-        T.start()
-        while True:
-            if T.get() > 0.2:
-                if self.cr.receiveFile():
-                    self.status_nt.putBoolean("Code", self.tryToSetupCode())
-                    self.stop()
-                    self.start()
-                    T.reset()
-    """    
 
     def setupMode(self, m):
         """
@@ -162,13 +141,6 @@ class main():
 
     def sendBatteryData(self):
         self.battery_nt.putNumber("Voltage", self.ai.getVoltage() * 3)
-
-    def stop(self):
-        self.isRunning = False
-        logging.info("Quitting...")
-        self.stop_threads = True
-        self.rl.join() 
-        self.disable()
             
     def quit(self):
         logging.info("Quitting...")
@@ -213,7 +185,6 @@ class main():
         self.disabled = False
         self.start()
         self.setupMode("Teleop")
-        #self.mainLoopThread()
 
     
             
@@ -222,15 +193,15 @@ class main():
 
 
 
-if __name__ == "__main__":
-    
-    m = main()
-    m.connect()
 
-    if m.tryToSetupCode():
-        m.start()
-    else:
-        sys.exit(1)
+    
+m = main()
+m.connect()
+
+if m.tryToSetupCode():
+    m.start()
+else:
+    time.sleep(0.2)
+    m.broadcastNoCode()
+    sys.exit(1)
         
-    #clThread = threading.Thread(target=m.connectionLoop)
-    #clThread.start()

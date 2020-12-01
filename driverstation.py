@@ -85,7 +85,7 @@ buttons = [False] * 11
 axis_values = [0] * 6
 
 def tryToSetupJoystick():
-    global joystick, hasJoysticks, buttons, axis_values
+    global joystick, hasJoysticks, buttons, axis_values, xbc_nt
     try:
         pygame.joystick.init()
         # Assume only 1 joystick for now
@@ -95,6 +95,9 @@ def tryToSetupJoystick():
         buttons = [False] * joystick.get_numbuttons()
         axis_values = [0] * joystick.get_numaxes()
         hasJoysticks = True
+
+        xbc_nt.putBooleanArray("Buttons", buttons)
+        xbc_nt.putNumberArray("Axis", list(axis_values))
         
     except pygame.error:
         hasJoysticks = False
@@ -137,14 +140,14 @@ def sendRobotCode(host):
     s.close()
 """
 
-tryToSetupJoystick()
+
 
 
 # save reference to table for each xbox controller
 xbc_nt = NetworkTables.getTable('DriverStation/XboxController0')
 mode_nt = NetworkTables.getTable('RobotMode')
 status_nt = NetworkTables.getTable('Status')
-
+tryToSetupJoystick()
 #lg = threading.Thread(target=logreceiver.main)
 #lg.daemon = True
 #lg.start()
@@ -173,8 +176,7 @@ while loopQuit == False:
 
     tryToSetupJoystick()
     
-    if status_nt.getBoolean(("Code"), False):
-        hasCode = True
+    hasCode = status_nt.getBoolean(("Code"), False)
 
 
     if hasCommunication and hasJoysticks and hasCode:
@@ -192,14 +194,16 @@ while loopQuit == False:
         updateFromRobot = False
     #print(updateFromRobot)
 
+    """
     if time.perf_counter() - a > 3:
         a = time.perf_counter()
         if not updateFromRobot:
             hasCommunication = False
         else:
             hasCommunication = True
-    
-    
+    s = lambda : NetworkTables.getRemoteAddress()
+    """
+    hasCommunication = True if NetworkTables.getRemoteAddress() is not None else False
     
 
 
