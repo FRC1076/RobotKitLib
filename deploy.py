@@ -17,7 +17,7 @@ parser.add_argument("ip_addr", help="IP address of the server")
 args = parser.parse_args()
 host = args.ip_addr
 
-port = 5001
+port = 2345
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((host, port))
@@ -25,9 +25,9 @@ s.connect((host, port))
 with s:
     sbuf = buffer.Buffer(s)
 
-    hash_type = input('Enter hash type: ')
+    hash_type = "abc"
 
-    files = input('Enter file(s) to send: ')
+    files = input('Enter file(s) to send: ') #TODO: write code to tar dir
     files_to_send = files.split()
 
     for file_name in files_to_send:

@@ -9,12 +9,18 @@ import buffer
 
 class codeReceiver():
 
-    def __init__(self):
-        pass
+    def __init__(self, host):
+        self.s = socket.socket()
+        self.s.bind((host, 2345))
+        
+
+        
         
 
     def setupConnection(self):
-        self.conn, self.addr = s.accept()
+        self.s.listen(10)
+        print("Waiting for a connection.....")
+        self.conn, self.addr = self.s.accept()
         print("Got a connection from ", self.addr)
         self.connbuf = buffer.Buffer(self.conn)
 
@@ -31,7 +37,7 @@ class codeReceiver():
             if not file_name:
                 hasFile = False
                 break
-            file_name = os.path.join('uploads',file_name)
+            #file_name = os.path.join('uploads',file_name)
             print('file name: ', file_name)
 
             file_size = int(self.connbuf.get_utf8())

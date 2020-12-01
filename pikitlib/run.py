@@ -11,8 +11,6 @@ import threading
 import pikitlib
 from networktables import NetworkTables
 
-from code_receiver import codeReceiver
-
 import socket
 import os
 
@@ -35,7 +33,6 @@ class main():
         self.current_mode = ""
         self.disabled = True
         
-        self.cr = None
         
         self.timer = pikitlib.Timer()
 
@@ -46,6 +43,7 @@ class main():
         try:
             import robot
             self.r = robot.MyRobot()
+            
             return True
         except ModuleNotFoundError:
             return False
@@ -69,6 +67,7 @@ class main():
         #self.cr = codeReceiver("0.0.0.0", 5001)
         #self.cr.setupConnection()
         sd = NetworkTables.getTable("RobotMode")
+        self.status_nt = NetworkTables.getTable("Status")
         sd.addEntryListener(self.valueChanged)
    
     def valueChanged(self, table, key, value, isNew):
@@ -95,6 +94,7 @@ class main():
         self.isRunning = True
         self.r.robotInit()
         self.setupBatteryLogger()
+        self.status_nt.putBoolean("Code", True)
         #self.rl = threading.Thread(target=self.robotLoop)
         self.stop_threads = False
         self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, )) 
@@ -103,7 +103,11 @@ class main():
             logging.debug("Main thread created")
 
     
+    def broadcastNoCode(self):
+        n = NetworkTables.getTable("Status")
+        self.status_nt.putBoolean("Code", False)
 
+    """
     def connectionLoop(self):
         self.cr = codeReceiver()
         self.cr.setupConnection()
@@ -123,7 +127,7 @@ class main():
                     self.stop()
                     self.start()
                     T.reset()
-            
+    """    
 
     def setupMode(self, m):
         """
@@ -222,9 +226,11 @@ if __name__ == "__main__":
     
     m = main()
     m.connect()
-    #m.start()
-    clThread = threading.Thread(target=m.connectionLoop)
-    clThread.start()
-    
 
-    
+    if m.tryToSetupCode():
+        m.start()
+    else:
+        sys.exit(1)
+        
+    #clThread = threading.Thread(target=m.connectionLoop)
+    #clThread.start()
