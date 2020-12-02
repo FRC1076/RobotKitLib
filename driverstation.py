@@ -103,45 +103,6 @@ def tryToSetupJoystick():
         hasJoysticks = False
 
 
-"""
-def sendRobotCode(host):
-    SEPARATOR = "/"
-    BUFFER_SIZE = 4096 
-    port = 5002
-
-    global s, connected
-
-    filename = "robot.py"
-    try:
-        filesize = os.path.getsize(filename)
-    except FileNotFoundError:
-        logging.critical("ERROR: " + filename + " not found!")
-        return
-    
-    if not connected:
-        print(f"[+] Connecting to {host}:{port}")
-        s.connect((host, port))
-        print("[+] Connected.")
-        connected = True
-
-    s.send(f"{filename}{SEPARATOR}{filesize}".encode())
-
-    progress = tqdm.tqdm(range(filesize), f"Sending {filename}", unit="B", unit_scale=True, unit_divisor=1024)
-    with open(filename, "rb") as f:
-        for _ in progress:
-            bytes_read = f.read(BUFFER_SIZE)
-            if not bytes_read:
-                break
-
-            s.sendall(bytes_read)
-
-            progress.update(len(bytes_read))
-
-    s.close()
-"""
-
-
-
 
 # save reference to table for each xbox controller
 xbc_nt = NetworkTables.getTable('DriverStation/XboxController0')

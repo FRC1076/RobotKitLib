@@ -9,6 +9,8 @@ import argparse
 import sys
 import logging
 
+import subprocess
+
 SEPARATOR = "/"
 BUFFER_SIZE = 4096 
 
@@ -27,17 +29,28 @@ with s:
 
     hash_type = "abc"
 
-    files = input('Enter file(s) to send: ') #TODO: write code to tar dir
-    files_to_send = files.split()
+    
+    #TODO: create archive, send it
 
-    for file_name in files_to_send:
-        print(file_name)
-        sbuf.put_utf8(hash_type)
-        sbuf.put_utf8(file_name)
+    
+    dir = os.getcwd()
+    dir.split("/")
 
-        file_size = os.path.getsize(file_name)
-        sbuf.put_utf8(str(file_size))
+    #os.system("create_archive.sh")
+    p = subprocess.Popen("./create_archive.sh", stdout=subprocess.PIPE)
+    
+    out, err = p.communicate()
 
-        with open(file_name, 'rb') as f:
-            sbuf.put_bytes(f.read())
-        print('File Sent')
+    file_name = out.decode('utf-8').split('\n')[0] + ".tar.gz"
+    print(file_name)
+    
+    
+    sbuf.put_utf8(hash_type)
+    sbuf.put_utf8(file_name)
+
+    file_size = os.path.getsize(file_name)
+    sbuf.put_utf8(str(file_size))
+
+    with open(file_name, 'rb') as f:
+        sbuf.put_bytes(f.read())
+    print('File Sent')

@@ -26,7 +26,7 @@ print("Waiting for a connection.....")
 while True:
 
     newCode = True
-
+    f = None
     conn, addr = s.accept()
     print("Got a connection from ", addr)
     connbuf = buffer.Buffer(conn)
@@ -38,9 +38,12 @@ while True:
         print('hash type: ', hash_type)
 
         file_name = connbuf.get_utf8()
+        
+        f = file_name
         if not file_name:
-            newCode = False
             break
+
+
         #file_name = os.path.join('uploads',file_name)
         print('file name: ', file_name)
 
@@ -61,7 +64,8 @@ while True:
                 print('File received successfully.')
 
     
-    if newCode:
+    if f:
+        os.system("tar -xf " + f + " & mv " + f.split(".")[0] + " RobotCode")
         p.kill()
         p = subprocess.Popen(["python", b], shell=False)
 

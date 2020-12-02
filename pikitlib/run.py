@@ -42,7 +42,7 @@ class main():
     def tryToSetupCode(self):
         try:
             import robot
-            self.r = robot.MyRobot()
+            self.r = RobotCode.robot.MyRobot()
             
             return True
         except ModuleNotFoundError:
