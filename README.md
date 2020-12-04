@@ -4,6 +4,7 @@
 * driverstation.py - resident on the laptop.   Reads controls, maybe displays dashboard, enables/disables and sends control/commands to the robot.
 * <>.py - other files needs to be integrated into the library.     (should not really be visible at the top layer, but they are there now for expediency)
 
+Note for Windows users - In order to run create_archive.sh (and by extension, deploy.py), you will need to install a bash terminal such as Git Bash (https://git-scm.com/downloads, make sure to select download for Windows) and run the file from there.
 
 The Freenove 4WD Raspberry Pi - based robot kit looks like a promising platform for software training.   This kits costs about $70, but requires a number of other components to be fully functional.
   * $35 Raspberry Pi 3B+
