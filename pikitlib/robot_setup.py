@@ -8,6 +8,11 @@ import buffer
 import subprocess
 
 
+try:
+    os.mkdir('RobotCode')
+except FileExistsError:
+    pass
+
 a = subprocess.check_output("pwd").decode("utf8")
 b = a[0:len(a)-1] + "/" + "run.py"
 
@@ -65,6 +70,8 @@ while True:
 
     
     if f:
+        os.system("rm -R RobotCode/")
+        os.mkdir("RobotCode")
         os.system("tar -xf " + f + " & mv " + f.split(".")[0] + " RobotCode")
         p.kill()
         p = subprocess.Popen(["python", b], shell=False)
