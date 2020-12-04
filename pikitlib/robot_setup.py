@@ -13,10 +13,10 @@ try:
 except FileExistsError:
     pass
 
-a = subprocess.check_output("pwd").decode("utf8")
-b = a[0:len(a)-1] + "/" + "run.py"
+out = subprocess.check_output("pwd").decode("utf8")
+path = out[0:len(out)-1] + "/" + "run.py"
 
-p = subprocess.Popen(["python", b], shell=False)
+process = subprocess.Popen(["python", path], shell=False)
 
 code = True
 
@@ -31,7 +31,7 @@ print("Waiting for a connection.....")
 while True:
 
     newCode = True
-    f = None
+    file_name = None
     conn, addr = s.accept()
     print("Got a connection from ", addr)
     connbuf = buffer.Buffer(conn)
@@ -44,7 +44,7 @@ while True:
 
         file_name = connbuf.get_utf8()
         
-        f = file_name
+
         if not file_name:
             break
 
@@ -69,12 +69,13 @@ while True:
                 print('File received successfully.')
 
     
-    if f:
+    if file_name: #If we received a new file
         os.system("rm -R RobotCode/")
         os.mkdir("RobotCode")
-        os.system("tar -xf " + f + " & mv " + f.split(".")[0] + " RobotCode")
-        p.kill()
-        p = subprocess.Popen(["python", b], shell=False)
+        os.system("mv " + file_name + " RobotCode/" + file_name)
+        os.system("tar -xf " + tar -cvf " + f + " & mv " + f.split(".")[0] + " RobotCode")
+        process.kill()
+        process = subprocess.Popen(["python", path], shell=False)
 
         
 
