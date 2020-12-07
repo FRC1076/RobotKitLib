@@ -41,7 +41,7 @@ class main():
         
     def tryToSetupCode(self):
         try:
-            import robot
+            import RobotCode.robot
             self.r = RobotCode.robot.MyRobot()
             
             return True

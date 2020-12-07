@@ -3,9 +3,13 @@ import tqdm
 import os
 import logging
 import buffer
-
+import sys
 
 import subprocess
+
+if os.geteuid != 0:
+    logging.error("ERROR: Need root to run")
+    sys.exit()
 
 
 try:
@@ -73,7 +77,9 @@ while True:
         os.system("rm -R RobotCode/")
         os.mkdir("RobotCode")
         os.system("mv " + file_name + " RobotCode/" + file_name)
-        os.system("tar -xf " + tar -cvf " + f + " & mv " + f.split(".")[0] + " RobotCode")
+        os.system("cd RobotCode & tar -xf " + file_name)
+        os.system("rm file_name & cd ..")
+
         process.kill()
         process = subprocess.Popen(["python", path], shell=False)
 

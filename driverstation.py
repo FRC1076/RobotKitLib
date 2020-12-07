@@ -22,18 +22,18 @@ def quit():
     pygame.quit()
     sys.exit()
 
+"""
 def connect():
-        """
-        Connect to robot NetworkTables server
-        """
-        NetworkTables.initialize()
+
+        #Connect to robot NetworkTables server
+
+        #NetworkTables.initialize(server=ip)
         NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
 
 
 def connectionListener(connected, info):
-    """
-    Setup the listener to detect any changes to the robotmode table
-    """
+
+
     #print(info, "; Connected=%s" % connected)
     logging.info("%s; Connected=%s", info, connected)
     global hasCommunication
@@ -47,15 +47,15 @@ def connectionListener(connected, info):
     sd.addEntryListener(valueChanged)
 
 def valueChanged(table, key, value, isNew):
-    """
-    Check for new changes and use them
-    """
+
+    #Check for new changes and use them
+
 
     if(key == "Voltage"):
         bV = str(value)[:4]
         GUI.setBatInfoText(bV)
 
-        
+"""   
 
 # Construct an argument parser
 parser = argparse.ArgumentParser()
@@ -64,6 +64,8 @@ args = parser.parse_args()
 ip = args.ip_addr
 print(ip)
 NetworkTables.initialize(ip)
+
+
 
 s = ""
 GUI = driverstationgui.DriverstationGUI()
@@ -105,6 +107,7 @@ def tryToSetupJoystick():
 xbc_nt = NetworkTables.getTable('DriverStation/XboxController0')
 mode_nt = NetworkTables.getTable('RobotMode')
 status_nt = NetworkTables.getTable('Status')
+batval_nt = NetworkTables.getTable('Battery')
 tryToSetupJoystick()
 #lg = threading.Thread(target=logreceiver.main)
 #lg.daemon = True
@@ -115,7 +118,7 @@ mode = ""
 disabled = True
 connected = False
 
-connect()
+#connect()
 
 print("starting")
 loopQuit = False
@@ -133,6 +136,9 @@ while loopQuit == False:
     """
 
     tryToSetupJoystick()
+
+
+
     
     hasCode = status_nt.getBoolean(("Code"), False)
 
@@ -153,7 +159,10 @@ while loopQuit == False:
 
     #Update indicators
     
-    
+
+    if hasCommunication:
+        bV = str(batval_nt.getValue("Voltage", "NO DATA"))[:4]
+        GUI.setBatInfoText(bV)
 
     GUI.updateIndicator(0, hasCommunication)
     GUI.updateIndicator(1, hasCode)

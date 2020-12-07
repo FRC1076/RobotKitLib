@@ -9,7 +9,7 @@ result=${result##*/}
 printf '%s\n' "$result"
 
 
-tar -cvf $result.tar.gz -C $result .
+tar --exclude='.git' -cvf $result.tar.gz -C $result .
 cp $result.tar.gz $result/$result.tar.gz
 rm $result.tar.gz
 cd $result
