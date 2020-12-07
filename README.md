@@ -33,6 +33,14 @@ Deploying code:
 Simply run `python deploy.py IP_ADDRESS` with the IP again being the IP of the robot
 
 On the robot:
+
+On the raspberry pi, enable SSH and GPIO
+
+Installing Dependencies:
+Download and run: https://github.com/Freenove/Freenove_4WD_Smart_Car_Kit_for_Raspberry_Pi/blob/master/Code/setup.py
+Install pygame and networktables with pip
+
+Running the code:
 Run `python robot_setup.py` (in future versions this will start on boot)
 
 
