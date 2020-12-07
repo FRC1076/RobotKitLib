@@ -50,10 +50,8 @@ def valueChanged(table, key, value, isNew):
     """
     Check for new changes and use them
     """
-    global updateFromRobot
 
     if(key == "Voltage"):
-        updateFromRobot = True
         bV = str(value)[:4]
         GUI.setBatInfoText(bV)
 
@@ -72,7 +70,6 @@ GUI = driverstationgui.DriverstationGUI()
 GUI.setup() 
 
 
-updateFromRobot = False
 
 hasCommunication = False
 hasCode = False #TODO: make some way to check for this
@@ -150,20 +147,6 @@ while loopQuit == False:
         xbc_nt.putNumberArray("Axis", list(axis_values))
 
     
-    if time.perf_counter() - b > 2.5:
-        b = time.perf_counter()
-        updateFromRobot = False
-    #print(updateFromRobot)
-
-    """
-    if time.perf_counter() - a > 3:
-        a = time.perf_counter()
-        if not updateFromRobot:
-            hasCommunication = False
-        else:
-            hasCommunication = True
-    s = lambda : NetworkTables.getRemoteAddress()
-    """
     hasCommunication = True if NetworkTables.getRemoteAddress() is not None else False
     
 
