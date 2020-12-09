@@ -17,14 +17,45 @@ import argparse
 
 import driverstationgui
 
-from deploy import Sender
-
-
 def quit():
     mode_nt.putBoolean("Disabled", True)
     pygame.quit()
     sys.exit()
 
+"""
+def connect():
+
+        #Connect to robot NetworkTables server
+
+        #NetworkTables.initialize(server=ip)
+        NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
+
+
+def connectionListener(connected, info):
+
+
+    #print(info, "; Connected=%s" % connected)
+    logging.info("%s; Connected=%s", info, connected)
+    global hasCommunication
+    hasCommunication = True
+
+    global s
+    s = socket.socket()
+
+    
+    sd = NetworkTables.getTable("Battery")
+    sd.addEntryListener(valueChanged)
+
+def valueChanged(table, key, value, isNew):
+
+    #Check for new changes and use them
+
+
+    if(key == "Voltage"):
+        bV = str(value)[:4]
+        GUI.setBatInfoText(bV)
+
+"""   
 
 # Construct an argument parser
 parser = argparse.ArgumentParser()
@@ -78,22 +109,22 @@ mode_nt = NetworkTables.getTable('RobotMode')
 status_nt = NetworkTables.getTable('Status')
 batval_nt = NetworkTables.getTable('Battery')
 tryToSetupJoystick()
+#lg = threading.Thread(target=logreceiver.main)
+#lg.daemon = True
+#lg.start()
 
 
 mode = ""
 disabled = True
 connected = False
 
+#connect()
+
 print("starting")
 loopQuit = False
 
 a = time.perf_counter()
 b = time.perf_counter()
-
-
-s = Sender(ip)
-s.connect()
-
 while loopQuit == False:
 
     """
@@ -104,10 +135,11 @@ while loopQuit == False:
          https://robotpy.readthedocs.io/projects/pynetworktables/en/latest/examples.html
     """
 
-
-    # Check and see if we have code, comms, and joystick
     tryToSetupJoystick()
-    hasCommunication = NetworkTables.getRemoteAddress() is not None
+
+
+
+    
     hasCode = status_nt.getBoolean(("Code"), False)
 
 
@@ -119,16 +151,19 @@ while loopQuit == False:
 
         xbc_nt.putBooleanArray("Buttons", buttons)
         xbc_nt.putNumberArray("Axis", list(axis_values))
+
     
+    hasCommunication = True if NetworkTables.getRemoteAddress() is not None else False
+    
+
+
+    #Update indicators
+    
+
     if hasCommunication:
         bV = str(batval_nt.getValue("Voltage", "NO DATA"))[:4]
         GUI.setBatInfoText(bV)
 
-    if hasCommunication and hasCode:
-        mode_nt.putBoolean("Disabled", disabled)
-        mode_nt.putString("Mode", mode)
-
-    # Update indicators
     GUI.updateIndicator(0, hasCommunication)
     GUI.updateIndicator(1, hasCode)
     GUI.updateIndicator(2, hasJoysticks)
@@ -136,7 +171,8 @@ while loopQuit == False:
     
 
 
-    # Check and see if butten is pressed, if do what the button says
+    # {"action": "Enable", "value": False}
+    # {"action": "Mode", "value": "Auton"}
     btn = GUI.getButtonPressed()
 
     if btn["action"] == "Enable":
@@ -149,11 +185,16 @@ while loopQuit == False:
         loopQuit = True
     elif btn["action"] == "ESTOP":
         mode_nt.putString("ESTOP", True)
-    elif btn["action"] == "Send":
-        s.sendFile()
-
+    #elif btn["action"] == "Code":
+        #if hasCommunication:
+    #    sendRobotCode(NetworkTables.getRemoteAddress())
+        #else:
+        #    logging.warning("Cant send code, no connection!")
     
     
+    if hasCommunication and hasCode:
+        mode_nt.putBoolean("Disabled", disabled)
+        mode_nt.putString("Mode", mode)
 
     GUI.update()
 

@@ -20,9 +20,7 @@ except FileExistsError:
 out = subprocess.check_output("pwd").decode("utf8")
 path = out[0:len(out)-1] + "/" + "run.py"
 
-process = subprocess.run(["python", path], shell=False)
-print(process.returncode)
-
+process = subprocess.Popen(["python", path], shell=False)
 
 code = True
 
@@ -75,9 +73,6 @@ while True:
                 print('File received successfully.')
 
     
-    if process.returncode == 2:
-        process = subprocess.run(["python", path], shell=False)
-
     if file_name: #If we received a new file
         os.system("rm -R RobotCode/")
         os.mkdir("RobotCode")
@@ -86,7 +81,7 @@ while True:
         os.system("rm file_name & cd ..")
 
         process.kill()
-        process = subprocess.run(["python", path], shell=False)
+        process = subprocess.Popen(["python", path], shell=False)
 
         
 
