@@ -119,10 +119,9 @@ connect()
 print("starting")
 loopQuit = False
 
-a = time.perf_counter()
-b = time.perf_counter()
 while loopQuit == False:
-
+    a = time.perf_counter()
+    b = time.perf_counter()
     """
     TODO: Check if values are different for windows/linux
     TODO: Update only when there is an update event
@@ -153,7 +152,7 @@ while loopQuit == False:
         updateFromRobot = False
 
 
-    if time.perf_counter() - a > 2:
+    if time.perf_counter() - a > 10:
         a = time.perf_counter()
         if not updateFromRobot:
             hasCommunication = False
