@@ -29,14 +29,9 @@ with s:
 
     hash_type = "abc"
 
-    
-    #TODO: create archive, send it
-
-    
     dir = os.getcwd()
     dir.split("/")
 
-    #os.system("create_archive.sh")
     p = subprocess.Popen("./create_archive.sh", stdout=subprocess.PIPE)
     
     out, err = p.communicate()

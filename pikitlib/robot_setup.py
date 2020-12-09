@@ -7,11 +7,6 @@ import sys
 
 import subprocess
 
-if os.geteuid != 0:
-    logging.error("ERROR: Need root to run")
-    sys.exit()
-
-
 try:
     os.mkdir('RobotCode')
 except FileExistsError:

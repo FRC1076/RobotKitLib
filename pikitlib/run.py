@@ -202,6 +202,9 @@ if m.tryToSetupCode():
     m.start()
 else:
     time.sleep(0.2)
-    m.broadcastNoCode()
+    try:
+        m.broadcastNoCode()
+    except:
+        print("No comms")
     sys.exit(1)
-        
+
