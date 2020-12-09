@@ -198,10 +198,14 @@ class main():
 m = main()
 m.connect()
 
-if m.tryToSetupCode():
-    m.start()
+if m.connect():
+    if m.tryToSetupCode():
+        m.start()
+    else:
+        time.sleep(0.2)
+        m.broadcastNoCode()
+        sys.exit(1)
 else:
-    time.sleep(0.2)
-    m.broadcastNoCode()
-    sys.exit(1)
+    sys.exit(2)
+
         

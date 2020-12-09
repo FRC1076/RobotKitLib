@@ -173,6 +173,8 @@ class DriverstationGUI():
                         else:
                             b.color = (0, 250, 0)
 
+            
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for btnSet in self.exclusive_buttons:
                     for btn in btnSet:
@@ -189,6 +191,9 @@ class DriverstationGUI():
                     return {"action":"Quit", "value":True}
                 if event.key == pygame.K_SPACE:
                     return {"action":"ESTOP", "value":True}
+                if event.key == pygame.K_s:
+                    #TODO: make a button
+                    return {"action":"Send", "value":True}
             if event.type == pygame.QUIT:
                 return {"action":"Quit", "value":True}  
         return {"action":None, "value":None}
