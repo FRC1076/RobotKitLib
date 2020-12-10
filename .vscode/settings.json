@@ -6,5 +6,5 @@
         "--extension-pkg-whitelist=lxml",
         "--extension-pkg-whitelist=pygame"
     ],
-    "python.pythonPath": "/home/eli/Robotics/RobotKitLib/RobotKitLib/venv/bin/python3"
+    "python.pythonPath": "/bin/python"
 }

@@ -7,11 +7,14 @@ import time
 import threading
 
 #Robot
-import robot
+#import robot
 import pikitlib
 from networktables import NetworkTables
 
+import socket
+import os
 
+import buffer
 
 #Networking and Logging
 import logging
@@ -26,15 +29,25 @@ class main():
         """
         Construct robot disconnect, and powered on
         """
-        self.r = robot.MyRobot()
+        self.r = None
         self.current_mode = ""
         self.disabled = True
         
-
+        
         self.timer = pikitlib.Timer()
 
-        
+        self.isRunning = False
 
+        
+    def tryToSetupCode(self):
+        try:
+            import RobotCode.robot
+            self.r = RobotCode.robot.MyRobot()
+            
+            return True
+        except ModuleNotFoundError:
+            return False
+        
         
     def connect(self):
         """
@@ -49,8 +62,12 @@ class main():
         Setup the listener to detect any changes to the robotmode table
         """
         #print(info, "; Connected=%s" % connected)
+        
         logging.info("%s; Connected=%s", info, connected)
+        #self.cr = codeReceiver("0.0.0.0", 5001)
+        #self.cr.setupConnection()
         sd = NetworkTables.getTable("RobotMode")
+        self.status_nt = NetworkTables.getTable("Status")
         sd.addEntryListener(self.valueChanged)
    
     def valueChanged(self, table, key, value, isNew):
@@ -73,15 +90,22 @@ class main():
         
         rootLogger.addHandler(socketHandler)
         
-    def start(self):    
+    def start(self):
+        self.isRunning = True
         self.r.robotInit()
         self.setupBatteryLogger()
+        self.status_nt.putBoolean("Code", True)
         #self.rl = threading.Thread(target=self.robotLoop)
         self.stop_threads = False
-        self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, )) 
+        self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, ))
         self.rl.start() 
+        print("created")
         if self.rl.is_alive():
             logging.debug("Main thread created")
+
+    
+    def broadcastNoCode(self):
+        self.status_nt.putBoolean("Code", False)
 
 
     def setupMode(self, m):
@@ -95,8 +119,6 @@ class main():
             self.r.autonomousInit()
 
         self.current_mode = m
-       
-        #self.rl.start()
 
     def auton(self):
         self.r.autonomousPeriodic()
@@ -119,7 +141,6 @@ class main():
 
     def sendBatteryData(self):
         self.battery_nt.putNumber("Voltage", self.ai.getVoltage() * 3)
-
             
     def quit(self):
         logging.info("Quitting...")
@@ -164,7 +185,6 @@ class main():
         self.disabled = False
         self.start()
         self.setupMode("Teleop")
-        #self.mainLoopThread()
 
     
             
@@ -173,11 +193,18 @@ class main():
 
 
 
-if __name__ == "__main__":
-    
-    m = main()
-    m.connect()
-    m.start()
-    
 
     
+m = main()
+m.connect()
+
+if m.tryToSetupCode():
+    m.start()
+else:
+    time.sleep(0.2)
+    try:
+        m.broadcastNoCode()
+    except:
+        print("No comms")
+    sys.exit(1)
+
