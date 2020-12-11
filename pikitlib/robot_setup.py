@@ -72,11 +72,11 @@ while True:
         os.system("rm -R RobotCode/")
         os.mkdir("RobotCode")
         os.system("mv " + file_name + " RobotCode/" + file_name)
-        os.system("cd RobotCode & tar -xf " + file_name)
-        os.system("rm file_name & cd ..")
-
+        os.system("tar -xf RobotCode/" + file_name + " -C RobotCode")
+        os.system("rm " +  "RobotCode/" + file_name)
         process.kill()
         process = subprocess.Popen(["python", path], shell=False)
+
 
         
 

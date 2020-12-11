@@ -205,6 +205,7 @@ else:
     try:
         m.broadcastNoCode()
     except:
-        print("No comms")
+        print("Either no code or error in robot code")
+        print("Waiting...")
     sys.exit(1)
 
