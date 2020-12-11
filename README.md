@@ -22,7 +22,11 @@ Important files:
 
 Note for Windows users - In order to deploy code, you will need to install a bash terminal such as Git Bash (https://git-scm.com/downloads, make sure to select download for Windows) and run the file from there.
 
-To setup this project, cloen the repo both on your local machine and the robot's raspberry pi. 
+Setup:
+
+Clone the repo both on your local machine and the robot's raspberry pi. 
+Install requirements.txt with pip on both your local machine and on the robot
+On the raspberry pi, enable SSH and GPIO
 
 Usage:
 
@@ -33,12 +37,6 @@ Deploying code:
 Simply run `python deploy.py IP_ADDRESS` with the IP again being the IP of the robot
 
 On the robot:
-
-On the raspberry pi, enable SSH and GPIO
-
-Installing Dependencies:
-Download and run: https://github.com/Freenove/Freenove_4WD_Smart_Car_Kit_for_Raspberry_Pi/blob/master/Code/setup.py
-Install pygame and networktables with pip
 
 Running the code:
 Run `python robot_setup.py` (in future versions this will start on boot)
