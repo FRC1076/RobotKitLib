@@ -32,7 +32,13 @@ with s:
     dir = os.getcwd()
     dir.split("/")
 
-    p = subprocess.Popen("./create_archive.sh", stdout=subprocess.PIPE)
+    if os.name == 'nt':
+        try:
+            p = subprocess.Popen(['C:\Program Files\Git\\bin\\bash.exe','-c',"./create_archive.sh"], stdout=subprocess.PIPE)
+        except Exception as e:
+            print("ERROR: Git Bash not installed")
+    else:
+        p = subprocess.Popen("./create_archive.sh", stdout=subprocess.PIPE)
     
     out, err = p.communicate()
 
