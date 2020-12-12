@@ -7,7 +7,7 @@ import time
 import threading
 
 #Robot
-#import robot
+import robot
 import pikitlib
 from networktables import NetworkTables
 
@@ -41,9 +41,7 @@ class main():
         
     def tryToSetupCode(self):
         try:
-            import RobotCode.robot
-            self.r = RobotCode.robot.MyRobot()
-            
+            self.r = robot.MyRobot()
             return True
         except ModuleNotFoundError:
             return False
@@ -62,7 +60,7 @@ class main():
         Setup the listener to detect any changes to the robotmode table
         """
         #print(info, "; Connected=%s" % connected)
-        
+        print('setting up conn listener')
         logging.info("%s; Connected=%s", info, connected)
         #self.cr = codeReceiver("0.0.0.0", 5001)
         #self.cr.setupConnection()
@@ -153,7 +151,6 @@ class main():
         bT = pikitlib.Timer() 
         bT.start()
         while not stop():
-            
             if bT.get() > 0.2:
                 self.sendBatteryData()
                 bT.reset()

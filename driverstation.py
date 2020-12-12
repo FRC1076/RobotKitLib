@@ -11,7 +11,6 @@ import logreceiver
 import ctypes
 import logging
 import socket
-import tqdm
 import os
 import argparse
 
