@@ -16,6 +16,9 @@ REST_OUT = 1
 MOVE_BACK = 2
 REST_BACK = 3
 
+ARCADE = 0
+TANK = 1
+
 PHASE_LENGTH = 1.0
 
 class MyRobot():
@@ -39,9 +42,10 @@ class MyRobot():
 
         NetworkTables.initialize()
         self.driver = pikitlib.XboxController(0)
+        self.drive_style = TANK
 
     def autonomousInit(self):
-        self.rr_phase = REST_BACK # will transition to MOVE_OUT
+        self.rr_phase = REST_BACK # will transition to MOVE_OUT right away
         self.update_state()
 
     def autonomousPeriodic(self):
@@ -63,10 +67,21 @@ class MyRobot():
 
     def teleopPeriodic(self):
         print('teleopPeriodic')
-        forward = self.driver.getX(LEFT_HAND)
-        forward = 0.80 * self.deadzone(forward, robotmap.DEADZONE)
-        rotation_value = -0.8 * self.driver.getY(RIGHT_HAND)
-        self.drive_train.arcadeDrive(forward,rotation_value)
+
+        if self.drive_style == ARCADE:
+            forward = self.driver.getX(LEFT_HAND)
+            forward = 0.80 * self.deadzone(forward, robotmap.DEADZONE)
+            rotation_value = -0.8 * self.driver.getY(RIGHT_HAND)
+            self.drive_train.arcadeDrive(forward,rotation_value)
+        
+        else: # drive_style == TANK      
+            left = self.driver.getY(LEFT_HAND)
+            left = 0.80 * self.deadzone(left, robotmap.DEADZONE)
+            right = self.driver.getY(RIGHT_HAND)
+            right = 0.80 * self.deadzone(right, robotmap.DEADZONE)
+            self.drive_train.tankDrive(left, -1.0 * right)
+
+
 
     def random_robot(self):
         '''
@@ -93,9 +108,10 @@ class MyRobot():
 
         elif self.rr_phase == REST_BACK:
             self.rr_phase = MOVE_OUT
-            self.rr_left = (random.random() * 2.0) - 1.0
-            self.rr_right = 1.0 - abs(self.rr_left)
+            self.rr_left = 1.0 - (random.random() / 2.0)
+            self.rr_right = 1.0 - (random.random() / 2.0)
             if (random.random() > 0.5):
+                self.rr_left = -1.0 * self.rr_left
                 self.rr_right = -1.0 * self.rr_right
 
         self.rr_deadline = time.perf_counter() + 1.0
