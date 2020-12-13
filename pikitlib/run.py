@@ -45,7 +45,8 @@ class main():
             self.r = RobotCode.robot.MyRobot()
             
             return True
-        except ModuleNotFoundError:
+        except Exception as e:
+            self.catchErrorAndLog(e)
             return False
         
         
@@ -82,7 +83,7 @@ class main():
     def setupLogging(self):
         rootLogger = logging.getLogger('')
         rootLogger.setLevel(logging.DEBUG)
-        socketHandler = logging.handlers.SocketHandler(self.connectedIP),logging.handlers.DEFAULT_TCP_LOGGING_PORT)
+        socketHandler = logging.handlers.SocketHandler(self.connectedIP,logging.handlers.DEFAULT_TCP_LOGGING_PORT)
         
         rootLogger.addHandler(socketHandler)
         
@@ -145,6 +146,13 @@ class main():
         self.rl.join() 
         self.disable()
         sys.exit()
+
+    def catchErrorAndLog(self, err):
+        logging.critical("Competition robot should not quit, but yours did!")
+        logging.critical(err)
+        self.broadcastNoCode()
+        logging.critical("Exiting...")
+        sys.exit()
             
     def robotLoop(self, stop):
         bT = pikitlib.Timer() 
@@ -156,11 +164,17 @@ class main():
                 bT.reset()
 
             if not self.disabled:
+                
+
                 self.timer.start()
-                if self.current_mode == "Auton":
-                    self.auton()
-                elif self.current_mode == "Teleop":
-                    self.teleop()
+                try:
+                    if self.current_mode == "Auton":
+                        self.auton()
+                    elif self.current_mode == "Teleop":
+                        self.teleop()
+                except Exception as e:
+                    self.catchErrorAndLog(e)
+                    break
                 self.timer.stop()
                 ts = 0.02 -  self.timer.get()
                 

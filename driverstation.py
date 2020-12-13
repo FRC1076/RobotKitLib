@@ -119,7 +119,7 @@ while loopQuit == False:
         xbc_nt.putNumberArray("Axis", list(axis_values))
 
     
-    hasCommunication = True if NetworkTables.getRemoteAddress() is not None else False
+    hasCommunication = NetworkTables.getRemoteAddress() is not None
     
 
 
