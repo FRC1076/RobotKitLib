@@ -35,7 +35,7 @@ class main():
         
         
         self.timer = pikitlib.Timer()
-
+        self.connectedIP = None
         self.isRunning = False
 
         
@@ -61,11 +61,8 @@ class main():
         """
         Setup the listener to detect any changes to the robotmode table
         """
-        #print(info, "; Connected=%s" % connected)
-        
+        self.connectedIP = str(info.remote_ip)
         logging.info("%s; Connected=%s", info, connected)
-        #self.cr = codeReceiver("0.0.0.0", 5001)
-        #self.cr.setupConnection()
         sd = NetworkTables.getTable("RobotMode")
         self.status_nt = NetworkTables.getTable("Status")
         sd.addEntryListener(self.valueChanged)
@@ -85,8 +82,7 @@ class main():
     def setupLogging(self):
         rootLogger = logging.getLogger('')
         rootLogger.setLevel(logging.DEBUG)
-        socketHandler = logging.handlers.SocketHandler(str(NetworkTables.getRemoteAddress()),
-            logging.handlers.DEFAULT_TCP_LOGGING_PORT)
+        socketHandler = logging.handlers.SocketHandler(self.connectedIP),logging.handlers.DEFAULT_TCP_LOGGING_PORT)
         
         rootLogger.addHandler(socketHandler)
         
@@ -95,11 +91,12 @@ class main():
         self.r.robotInit()
         self.setupBatteryLogger()
         self.status_nt.putBoolean("Code", True)
-        #self.rl = threading.Thread(target=self.robotLoop)
+
         self.stop_threads = False
         self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, ))
         self.rl.start() 
-        print("created")
+        self.setupLogging()
+        logging.debug("Starting")
         if self.rl.is_alive():
             logging.debug("Main thread created")
 
@@ -185,14 +182,6 @@ class main():
         self.disabled = False
         self.start()
         self.setupMode("Teleop")
-
-    
-            
-
-
-
-
-
 
     
 m = main()
