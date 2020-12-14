@@ -6,6 +6,16 @@ import math
 class DifferentialDrive(RobotDriveBase):
 
     def __init__(self, left: SpeedController, right:SpeedController):
+        """Constructor for DifferentialDrive.
+        .. note:: To pass multiple motors per side, use a :class:`.SpeedControllerGroup`.
+                  If a motor needs to be inverted, do so before passing it in.
+        :param leftMotor: Left motor(s)
+        :param rightMotor: Right motor(s)
+        """
+        assert left is not None, "Left Motor should not be None"
+        assert right is not None, "Right Motor should not be None"
+        super().__init__()
+
         self.left = left
         self.right = right
         self.rightSideInvertMultiplier = -1.0

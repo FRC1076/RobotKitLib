@@ -1,22 +1,22 @@
 # python run.py robot.py
 
 
-#General Imports
-import sys
-import time
-import threading
-
-#Robot
-import robot
-import pikitlib
-from networktables import NetworkTables
-
-
-
 #Networking and Logging
 import logging
 import logging.handlers
+import os
+import socket
+#General Imports
+import sys
+import threading
+import time
 
+from networktables import NetworkTables
+
+import buffer
+#Robot
+#import robot
+import pikitlib
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -26,15 +26,26 @@ class main():
         """
         Construct robot disconnect, and powered on
         """
-        self.r = robot.MyRobot()
+        self.r = None
         self.current_mode = ""
         self.disabled = True
         
-
+        
         self.timer = pikitlib.Timer()
+        self.connectedIP = None
+        self.isRunning = False
 
         
-
+    def tryToSetupCode(self):
+        try:
+            import RobotCode.robot
+            self.r = RobotCode.robot.MyRobot()
+            
+            return True
+        except Exception as e:
+            self.catchErrorAndLog(e)
+            return False
+        
         
     def connect(self):
         """
@@ -48,9 +59,10 @@ class main():
         """
         Setup the listener to detect any changes to the robotmode table
         """
-        #print(info, "; Connected=%s" % connected)
+        self.connectedIP = str(info.remote_ip)
         logging.info("%s; Connected=%s", info, connected)
         sd = NetworkTables.getTable("RobotMode")
+        self.status_nt = NetworkTables.getTable("Status")
         sd.addEntryListener(self.valueChanged)
    
     def valueChanged(self, table, key, value, isNew):
@@ -68,20 +80,27 @@ class main():
     def setupLogging(self):
         rootLogger = logging.getLogger('')
         rootLogger.setLevel(logging.DEBUG)
-        socketHandler = logging.handlers.SocketHandler(str(NetworkTables.getRemoteAddress()),
-            logging.handlers.DEFAULT_TCP_LOGGING_PORT)
+        socketHandler = logging.handlers.SocketHandler(self.connectedIP,logging.handlers.DEFAULT_TCP_LOGGING_PORT)
         
         rootLogger.addHandler(socketHandler)
         
-    def start(self):    
+    def start(self):
+        self.isRunning = True
         self.r.robotInit()
         self.setupBatteryLogger()
-        #self.rl = threading.Thread(target=self.robotLoop)
+        self.status_nt.putBoolean("Code", True)
+
         self.stop_threads = False
-        self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, )) 
+        self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, ))
         self.rl.start() 
+        self.setupLogging()
+        logging.debug("Starting")
         if self.rl.is_alive():
             logging.debug("Main thread created")
+
+    
+    def broadcastNoCode(self):
+        self.status_nt.putBoolean("Code", False)
 
 
     def setupMode(self, m):
@@ -95,8 +114,6 @@ class main():
             self.r.autonomousInit()
 
         self.current_mode = m
-       
-        #self.rl.start()
 
     def auton(self):
         self.r.autonomousPeriodic()
@@ -119,13 +136,25 @@ class main():
 
     def sendBatteryData(self):
         self.battery_nt.putNumber("Voltage", self.ai.getVoltage() * 3)
-
             
     def quit(self):
         logging.info("Quitting...")
         self.stop_threads = True
         self.rl.join() 
         self.disable()
+        sys.exit()
+
+    def catchErrorAndLog(self, err):
+        logging.critical("Competition robot should not quit, but yours did!")
+        logging.critical(err)
+        try:
+            self.broadcastNoCode()
+        except AttributeError:
+            #if there is no code, broadcasting wont work
+            #TODO: rework how broadcasting works so this isnt required 
+            pass
+        
+        #logging.critical("Resetting ()...")
         sys.exit()
             
     def robotLoop(self, stop):
@@ -138,11 +167,17 @@ class main():
                 bT.reset()
 
             if not self.disabled:
+                
+
                 self.timer.start()
-                if self.current_mode == "Auton":
-                    self.auton()
-                elif self.current_mode == "Teleop":
-                    self.teleop()
+                try:
+                    if self.current_mode == "Auton":
+                        self.auton()
+                    elif self.current_mode == "Teleop":
+                        self.teleop()
+                except Exception as e:
+                    self.catchErrorAndLog(e)
+                    break
                 self.timer.stop()
                 ts = 0.02 -  self.timer.get()
                 
@@ -164,20 +199,19 @@ class main():
         self.disabled = False
         self.start()
         self.setupMode("Teleop")
-        #self.mainLoopThread()
 
     
-            
+m = main()
+m.connect()
 
-
-
-
-
-if __name__ == "__main__":
-    
-    m = main()
-    m.connect()
+if m.tryToSetupCode():
     m.start()
-    
+else:
+    time.sleep(0.2)
+    try:
+        m.broadcastNoCode()
+    except:
+        print("Either no code or error in robot code")
+        print("Waiting...")
+    sys.exit(1)
 
-    
