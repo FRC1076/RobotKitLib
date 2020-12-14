@@ -1,0 +1,16 @@
+first you will have to go to home then pi. 
+show hidden items 
+go into .config 
+if autostart exist go into the file if no create it make sure it is all lower case
+create a file name it anything you want as long as its a .desktop
+then add these lines of code
+
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=<GUI Controller>
+Comment=
+Exec= python3 /home/pi/RobotKitLib/pikitlib/robot_setup.py #
+StartupNotify=false
+Terminal=True
+Hidden=false
