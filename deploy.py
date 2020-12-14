@@ -34,9 +34,12 @@ with s:
 
     if os.name == 'nt':
         try:
+            # Note: this line will show an error on *nix machines, can be safely ignored
             p = subprocess.Popen(['C:\Program Files\Git\\bin\\bash.exe','-c',"./create_archive.sh"], stdout=subprocess.PIPE)
         except Exception as e:
+            print(e)
             print("ERROR: Git Bash not installed")
+            sys.exit()
     else:
         p = subprocess.Popen("./create_archive.sh", stdout=subprocess.PIPE)
     
