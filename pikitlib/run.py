@@ -154,7 +154,7 @@ class main():
             #TODO: rework how broadcasting works so this isnt required 
             pass
         
-        logging.critical("Exiting...")
+        #logging.critical("Resetting ()...")
         sys.exit()
             
     def robotLoop(self, stop):
