@@ -22,8 +22,10 @@ class MyRobot():
         self.left = pikitlib.SpeedControllerGroup(self.leftBackMotor, self.leftFrontMotor)
         self.right = pikitlib.SpeedControllerGroup(self.rightBackMotor, self.rightFrontMotor )
 
+        self.ultrasonic = pikitlib.Ultrasonic() #Can pass in input/output ports; default values are 27 and 22 respectively.
+
         self.myRobot = pikitlib.DifferentialDrive(self.left, self.right)
-       # self.myRobot.setExpiration(0.1)
+        #self.myRobot.setExpiration(0.1)
 
         self.DEADZONE = 0.4
 
@@ -44,15 +46,18 @@ class MyRobot():
         """
         self.left.setInverted(False)
         self.right.setInverted(False)
-        
+
     def deadzone(self, val, deadzone):
         if abs(val) < deadzone:
             return 0
         return val
 
     def teleopPeriodic(self):
-        
+        '''Runs once per 20ms = 50 times a second'''
+
         forward = self.driver.getX(LEFT_HAND)
         forward = 0.80 * self.deadzone(forward, robotmap.DEADZONE)
         rotation_value = -0.8 * self.driver.getY(RIGHT_HAND)
         self.myRobot.arcadeDrive(forward,rotation_value)
+
+        print(self.ultrasonic.getRangeInches())
