@@ -38,8 +38,8 @@ class main():
         
     def tryToSetupCode(self):
         try:
-            import RobotCode.robot
-            self.r = RobotCode.robot.MyRobot()
+            from RobotCode.pikitlib.robot import MyRobot
+            self.r = MyRobot()
             
             return True
         except Exception as e:
