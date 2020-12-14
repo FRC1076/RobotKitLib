@@ -18,6 +18,8 @@ Important files:
 * <>.py - other files needs to be integrated into the library.     (should not really be visible at the top layer, but they are there now for expediency)
 * deploy.py - sends new code to the robot
 
+NOTE: Using this code requires Python 3.9
+
 ## Setup
 
 Note for Windows users - In order to deploy code, you will need to install a bash terminal such as Git Bash (https://git-scm.com/downloads, make sure to select download for Windows) and run the file from there.
