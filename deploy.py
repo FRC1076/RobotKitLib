@@ -22,7 +22,13 @@ host = args.ip_addr
 port = 2345
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((host, port))
+try:
+    s.connect((host, port))
+except ConnectionRefusedError:
+    logging.error("Cannnot connect to robot")
+    logging.error("Is the robot running, or do you have the right ip?")
+    sys.exit()
+
 
 with s:
     sbuf = buffer.Buffer(s)
