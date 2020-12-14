@@ -36,7 +36,7 @@ class MyRobot():
         self.myRobot.tankDrive(0.8, 0.8)
 
     def autonomousPeriodic(self):
-        self.myRobot.tankrive(1, 0.5)
+        self.myRobot.tankDrive(1, 0.5)
 
     def teleopInit(self):
         """
