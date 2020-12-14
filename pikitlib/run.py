@@ -1,25 +1,22 @@
 # python run.py robot.py
 
 
-#General Imports
-import sys
-import time
-import threading
-
-#Robot
-#import robot
-import pikitlib
-from networktables import NetworkTables
-
-import socket
-import os
-
-import buffer
-
 #Networking and Logging
 import logging
 import logging.handlers
+import os
+import socket
+#General Imports
+import sys
+import threading
+import time
 
+from networktables import NetworkTables
+
+import buffer
+#Robot
+#import robot
+import pikitlib
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -150,7 +147,13 @@ class main():
     def catchErrorAndLog(self, err):
         logging.critical("Competition robot should not quit, but yours did!")
         logging.critical(err)
-        self.broadcastNoCode()
+        try:
+            self.broadcastNoCode()
+        except AttributeError:
+            #if there is no code, broadcasting wont work
+            #TODO: rework how broadcasting works so this isnt required 
+            pass
+        
         logging.critical("Exiting...")
         sys.exit()
             
