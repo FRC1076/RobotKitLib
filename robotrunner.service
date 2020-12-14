@@ -1,0 +1,10 @@
+[Unit]
+Description=Robot runner
+
+[Service]
+ExecStart=/usr/bin/python3 -u robot_setup.py
+WorkingDirectory=/home/pi/RobotKitLib/pikitlib
+User=pi
+
+[Install]
+WantedBy=multi-user.target
