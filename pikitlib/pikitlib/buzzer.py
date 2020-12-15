@@ -1,9 +1,10 @@
 import sys
+import logging
 try:
     import RPi.GPIO as GPIO
 except Exception as e:
-    print("You are either not using a raspberry pi or dont have RPi.GPIO installed")
-    print("Quiting...")
+    logging.error("You are either not using a raspberry pi or dont have RPi.GPIO installed")
+    logging.error("If you are deploying code, you can safely ignore this message")
     #sys.exit()
 
 

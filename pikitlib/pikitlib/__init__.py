@@ -9,3 +9,4 @@ from .analoginput import analogInput
 from .timedrobot import TimedRobot
 from .iterativerobotbase import IterativeRobotBase
 from .buffer import Buffer
+from .run import run
