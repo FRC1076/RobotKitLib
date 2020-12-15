@@ -54,4 +54,4 @@ class MyRobot():
         yspeed = self.driver.gety(LEFT_HAND)
         yspeed = 0.80 * self.deadzone(yspeed, robotmap.DEADZONE)
         zRotation = -0.8 * self.driver.getY(RIGHT_HAND)
-        self.myRobot.tankDrive(left,right)
+        self.myRobot.driveCartesianA(xspeed,yspeed,zRotation,True)
