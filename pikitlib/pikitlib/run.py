@@ -52,19 +52,30 @@ def deploy(h):
         hash_type = "abc"
 
         dir = os.getcwd()
-        print(dir)
         dir.split("/")
+
+        cmd = """dirname=$(pwd)
+            cd ..
+            shopt -s extglob           
+            result=${dirname%%+(/)}    
+            result=${result##*/}       
+            printf '%s\n' "$result"
+            tar --exclude='.git' -cvf $result.tar.gz -C $result .
+            cp $result.tar.gz $result/$result.tar.gz
+            rm $result.tar.gz
+            cd $result
+            echo $result"""
 
         if os.name == 'nt':
             try:
                 # Note: this line will show an error on *nix machines, can be safely ignored
-                p = subprocess.Popen(['C:\Program Files\Git\\bin\\bash.exe','-c',"./create_archive.sh"], stdout=subprocess.PIPE)
+                p = subprocess.Popen(['C:\Program Files\Git\\bin\\bash.exe','-c',cmd], stdout=subprocess.PIPE)
             except Exception as e:
                 print(e)
                 print("ERROR: Git Bash not installed")
                 sys.exit()
         else:
-            p = subprocess.Popen("./create_archive.sh", stdout=subprocess.PIPE)
+            p = subprocess.Popen(["sh", "-c", cmd], stdout=subprocess.PIPE)
         
         out, err = p.communicate()
 
@@ -80,6 +91,8 @@ def deploy(h):
 
         with open(file_name, 'rb') as f:
             sbuf.put_bytes(f.read())
+
+        subprocess.Popen("rm " + file_name)
         print('File Sent')
 
     

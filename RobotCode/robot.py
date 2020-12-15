@@ -10,7 +10,7 @@ import robotmap
 LEFT_HAND = 1
 RIGHT_HAND = 0
 
-class MyRobot():
+class MyRobot(pikitlib.TimedRobot):
     def robotInit(self):
         """Robot initialization function"""
         # object that handles basic drive operations
@@ -56,3 +56,6 @@ class MyRobot():
         forward = 0.80 * self.deadzone(forward, robotmap.DEADZONE)
         rotation_value = -0.8 * self.driver.getY(RIGHT_HAND)
         self.myRobot.arcadeDrive(forward,rotation_value)
+
+if __name__ == "__main__":
+    pikitlib.run(MyRobot)
