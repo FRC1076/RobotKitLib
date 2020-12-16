@@ -92,7 +92,6 @@ def deploy(h):
         with open(file_name, 'rb') as f:
             sbuf.put_bytes(f.read())
 
-        subprocess.Popen("rm " + file_name)
         print('File Sent')
 
     
