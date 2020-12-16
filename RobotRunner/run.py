@@ -45,7 +45,7 @@ class main():
         except Exception as e:
             logging.critical("Looks like you dont have any code!")
             logging.critical("Send code with deploy.py")
-            self.catchErrorAndLog(e)
+            self.catchErrorAndLog(e, False)
             return False
         
         
@@ -146,11 +146,12 @@ class main():
         self.disable()
         sys.exit()
 
-    def catchErrorAndLog(self, err):
-        logging.critical("Competition robot should not quit, but yours did!")
-        logging.critical(err)
+    def catchErrorAndLog(self, err, logErr=True):
+        if logErr:
+            logging.critical("Competition robot should not quit, but yours did!")
+            logging.critical(err)
         
-    
+
         try:
             self.broadcastNoCode()
         except AttributeError:
