@@ -2,7 +2,13 @@
 
 import time
 import math
-import smbus2 as smbus
+import logging
+
+try:
+  import smbus2
+except ModuleNotFoundError:
+  import smbus2 as smbus
+
 
 # ============================================================================
 # Raspi PCA9685 16-Channel PWM Servo Driver
