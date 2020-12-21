@@ -19,7 +19,10 @@ class MyRobot():
         self.rightBackMotor = pikitlib.SpeedController(robotmap.BACK_RIGHT)
         self.rightFrontMotor = pikitlib.SpeedController(robotmap.FRONT_RIGHT)
 
-        self.myRobot = pikitlib.MecanumDrive(self.frontleft, self.frontright, self.rearleft, self.rearright)
+        self.left = pikitlib.SpeedControllerGroup(self.leftBackMotor, self.leftFrontMotor)
+        self.right = pikitlib.SpeedControllerGroup(self.rightBackMotor, self.rightFrontMotor )
+
+        self.myRobot = pikitlib.DifferentialDrive(self.left, self.right)
        # self.myRobot.setExpiration(0.1)
 
         self.DEADZONE = 0.4
@@ -40,7 +43,7 @@ class MyRobot():
         Configures appropriate robot settings for teleop mode
         """
         self.left.setInverted(False)
-        self.right.setInverted(True)
+        self.right.setInverted(False)
         
     def deadzone(self, val, deadzone):
         if abs(val) < deadzone:
@@ -49,9 +52,7 @@ class MyRobot():
 
     def teleopPeriodic(self):
         
-        xspeed = self.driver.getx(LEFT_HAND)
-        xspeed = 0.80 * self.deadzone(xspeed, robotmap.DEADZONE)
-        yspeed = self.driver.gety(LEFT_HAND)
-        yspeed = 0.80 * self.deadzone(yspeed, robotmap.DEADZONE)
-        zRotation = -0.8 * self.driver.getY(RIGHT_HAND)
-        self.myRobot.tankDrive(left,right)
+        forward = self.driver.getX(LEFT_HAND)
+        forward = 0.80 * self.deadzone(forward, robotmap.DEADZONE)
+        rotation_value = -0.8 * self.driver.getY(RIGHT_HAND)
+        self.myRobot.arcadeDrive(forward,rotation_value)

@@ -89,9 +89,10 @@ connected = False
 print("starting")
 loopQuit = False
 
+a = time.perf_counter()
+b = time.perf_counter()
 while loopQuit == False:
-    a = time.perf_counter()
-    b = time.perf_counter()
+
     """
     TODO: Check if values are different for windows/linux
     TODO: Update only when there is an update event
@@ -118,9 +119,7 @@ while loopQuit == False:
         xbc_nt.putNumberArray("Axis", list(axis_values))
 
     
-
     hasCommunication = NetworkTables.getRemoteAddress() is not None
-
     
 
 
