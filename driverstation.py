@@ -1,4 +1,4 @@
-
+# pylint: disable=no-member
 #Pygame Imports
 import sys, time    #Imports Modules
 import pygame
@@ -10,7 +10,9 @@ import threading
 import logreceiver
 import ctypes
 import logging
-
+import socket
+import tqdm
+import os
 import argparse
 
 import driverstationgui
@@ -20,43 +22,6 @@ def quit():
     pygame.quit()
     sys.exit()
 
-def connect():
-        """
-        Connect to robot NetworkTables server
-        """
-        NetworkTables.initialize()
-        NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
-
-
-def connectionListener(connected, info):
-    """
-    Setup the listener to detect any changes to the robotmode table
-    """
-    #print(info, "; Connected=%s" % connected)
-    logging.info("%s; Connected=%s", info, connected)
-    global hasCommunication
-    hasCommunication = True
-    sd = NetworkTables.getTable("Battery")
-    sd.addEntryListener(valueChanged)
-
-def valueChanged(table, key, value, isNew):
-    """
-    Check for new changes and use them
-    """
-    #print("valueChanged: key: '%s'; value: %s; isNew: %s" % (key, value, isNew))
-
-    
-
-    
-    global updateFromRobot
-
-    if(key == "Voltage"):
-        updateFromRobot = True
-        bV = str(value)[:4]
-        GUI.setBatInfoText(bV)
-
-        #print("Voltage: " + str(value))
-        
 
 # Construct an argument parser
 parser = argparse.ArgumentParser()
@@ -67,11 +32,12 @@ print(ip)
 NetworkTables.initialize(ip)
 
 
+
+s = ""
 GUI = driverstationgui.DriverstationGUI()
 GUI.setup() 
 
 
-updateFromRobot = False
 
 hasCommunication = False
 hasCode = False #TODO: make some way to check for this
@@ -84,7 +50,7 @@ buttons = [False] * 11
 axis_values = [0] * 6
 
 def tryToSetupJoystick():
-    global joystick, hasJoysticks, buttons, axis_values
+    global joystick, hasJoysticks, buttons, axis_values, xbc_nt
     try:
         pygame.joystick.init()
         # Assume only 1 joystick for now
@@ -94,27 +60,31 @@ def tryToSetupJoystick():
         buttons = [False] * joystick.get_numbuttons()
         axis_values = [0] * joystick.get_numaxes()
         hasJoysticks = True
+
+        xbc_nt.putBooleanArray("Buttons", buttons)
+        xbc_nt.putNumberArray("Axis", list(axis_values))
         
     except pygame.error:
         hasJoysticks = False
 
-tryToSetupJoystick()
 
 
 # save reference to table for each xbox controller
 xbc_nt = NetworkTables.getTable('DriverStation/XboxController0')
 mode_nt = NetworkTables.getTable('RobotMode')
-
-
-#lg = threading.Thread(target=logreceiver.main)
-#lg.daemon = True
-#lg.start()
+status_nt = NetworkTables.getTable('Status')
+batval_nt = NetworkTables.getTable('Battery')
+tryToSetupJoystick()
+lg = threading.Thread(target=logreceiver.main)
+lg.daemon = True
+lg.start()
 
 
 mode = ""
 disabled = True
+connected = False
 
-connect()
+#connect()
 
 print("starting")
 loopQuit = False
@@ -131,13 +101,14 @@ while loopQuit == False:
     """
 
     tryToSetupJoystick()
+
+
+
     
-    if hasCommunication:
-        hasCode = True
-        #TODO: Make a better way to check this
+    hasCode = status_nt.getBoolean(("Code"), False)
 
 
-    if hasCommunication and hasJoysticks:
+    if hasCommunication and hasJoysticks and hasCode:
         for i in range(len(buttons)):
             buttons[i] = bool(joystick.get_button(i))
         for j in range(len(axis_values)):
@@ -147,23 +118,18 @@ while loopQuit == False:
         xbc_nt.putNumberArray("Axis", list(axis_values))
 
     
-    if time.perf_counter() - b > 1:
-        b = time.perf_counter()
-        updateFromRobot = False
 
+    hasCommunication = NetworkTables.getRemoteAddress() is not None
 
-    if time.perf_counter() - a > 10:
-        a = time.perf_counter()
-        if not updateFromRobot:
-            hasCommunication = False
-    
-    
     
 
 
     #Update indicators
     
-    
+
+    if hasCommunication:
+        bV = str(batval_nt.getValue("Voltage", "NO DATA"))[:4]
+        GUI.setBatInfoText(bV)
 
     GUI.updateIndicator(0, hasCommunication)
     GUI.updateIndicator(1, hasCode)
@@ -186,9 +152,14 @@ while loopQuit == False:
         loopQuit = True
     elif btn["action"] == "ESTOP":
         mode_nt.putString("ESTOP", True)
+    #elif btn["action"] == "Code":
+        #if hasCommunication:
+    #    sendRobotCode(NetworkTables.getRemoteAddress())
+        #else:
+        #    logging.warning("Cant send code, no connection!")
     
     
-    if hasCommunication:
+    if hasCommunication and hasCode:
         mode_nt.putBoolean("Disabled", disabled)
         mode_nt.putString("Mode", mode)
 
