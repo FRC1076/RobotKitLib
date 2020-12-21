@@ -14,10 +14,10 @@ class MyRobot():
     def robotInit(self):
         """Robot initialization function"""
         # object that handles basic drive operations
-        self.leftBackMotor = pikitlib.SpeedController(robotmap.BACK_LEFT)
-        self.leftFrontMotor = pikitlib.SpeedController(robotmap.FRONT_LEFT)
-        self.rightBackMotor = pikitlib.SpeedController(robotmap.BACK_RIGHT)
-        self.rightFrontMotor = pikitlib.SpeedController(robotmap.FRONT_RIGHT)
+        self.rearleft = pikitlib.SpeedController(robotmap.BACK_LEFT)
+        self.frontleft = pikitlib.SpeedController(robotmap.FRONT_LEFT)
+        self.rearright = pikitlib.SpeedController(robotmap.BACK_RIGHT)
+        self.frontright = pikitlib.SpeedController(robotmap.FRONT_RIGHT)
 
         self.myRobot = pikitlib.MecanumDrive(self.frontleft, self.frontright, self.rearleft, self.rearright)
        # self.myRobot.setExpiration(0.1)
