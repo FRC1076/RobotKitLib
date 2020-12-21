@@ -8,8 +8,8 @@ class MecanumDrive(RobotDriveBase):
     def __init__(self, frontleft: SpeedController, frontright: SpeedController, backleft: SpeedController, backright: SpeedController):
         self.frontleft = frontleft
         self.frontright = frontright
-        self.rearleft = rearleft
-        self.rearright = rearright
+        self.rearleft = backleft
+        self.rearright = backright
         self.rightSideInvertMultiplier = -1.0
         RobotDriveBase.__init__(self)
     
@@ -49,24 +49,24 @@ class MecanumDrive(RobotDriveBase):
         self.rearright.set(wheelSpeeds[3] * self.rightSideInvertMultiplier)
 
     def driveCartesianB(self, xspeed: float, yspeed: float, zRotation: float, squareInputs: bool = True) -> None:
-
+        
         xspeed = RobotDriveBase.limit(xspeed)
         xspeed = RobotDriveBase.applyDeadband(xspeed, self.deadband)
 
         yspeed = RobotDriveBase.limit(yspeed)
         yspeed = RobotDriveBase.applyDeadband(yspeed, self.deadband)
-        
+
         if squareInputs:
             # Square the inputs (while preserving the sign) to increase fine
             # control while permitting full power.
             xspeed = math.copysign(xspeed * xspeed, xspeed)
             yspeed = math.copysign(yspeed * yspeed, yspeed)
             zRotation = math.copysign(zRotation * zRotation, zRotation)
-        
+
         rads = math.atan2(yspeed, xspeed)
 
-        diag0 = sin(rads - (1/4 * math.pi)) * math.dist([0,0], [xspeed, yspeed]) + zRotation
-        diag1 = sin(rads + (1/4 * math.pi)) * math.dist([0,0], [xspeed, yspeed]) + zRotation
+        diag0 = math.sin(rads - (1/4 * math.pi)) * math.hypot(xspeed, yspeed) + zRotation
+        diag1 = math.sin(rads + (1/4 * math.pi)) * math.hypot(xspeed, yspeed) + zRotation
 
         diag0 *= self.maxOutput
         diag1 *= self.maxOutput

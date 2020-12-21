@@ -30,17 +30,21 @@ class MyRobot():
         self.driver = pikitlib.XboxController(0)
 
     def autonomousInit(self):
-        self.myRobot.tankDrive(0.8, 0.8)
+        #self.myRobot.tankDrive(0.8, 0.8)
+        pass
 
     def autonomousPeriodic(self):
-        self.myRobot.tankDrive(1, 0.5)
+        #self.myRobot.tankDrive(1, 0.5)
+        pass
 
     def teleopInit(self):
         """
         Configures appropriate robot settings for teleop mode
         """
-        self.left.setInverted(False)
-        self.right.setInverted(True)
+        self.frontleft.setInverted(False)
+        self.rearleft.setInverted(False)
+        self.frontright.setInverted(True)
+        self.rearright.setInverted(True)
         
     def deadzone(self, val, deadzone):
         if abs(val) < deadzone:
@@ -49,9 +53,10 @@ class MyRobot():
 
     def teleopPeriodic(self):
         
-        xspeed = self.driver.getx(LEFT_HAND)
+        xspeed = self.driver.getX(RIGHT_HAND)
         xspeed = 0.80 * self.deadzone(xspeed, robotmap.DEADZONE)
-        yspeed = self.driver.gety(LEFT_HAND)
+        yspeed = self.driver.getY(RIGHT_HAND)
         yspeed = 0.80 * self.deadzone(yspeed, robotmap.DEADZONE)
-        zRotation = -0.8 * self.driver.getY(RIGHT_HAND)
-        self.myRobot.driveCartesianA(xspeed,yspeed,zRotation,True)
+        zRotation = -0.8 * self.driver.getY(LEFT_HAND)
+
+        self.myRobot.driveCartesianB(xspeed,yspeed,zRotation,True)
