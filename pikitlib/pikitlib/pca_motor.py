@@ -5,7 +5,7 @@ import math
 import logging
 
 try:
-  import smbus2
+  import smbus
 except ModuleNotFoundError:
   import smbus2 as smbus
 
