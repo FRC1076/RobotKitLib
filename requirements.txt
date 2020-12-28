@@ -2,3 +2,4 @@ rpi-ws281x
 pygame
 pynetworktables
 tqdm
+dos2unix

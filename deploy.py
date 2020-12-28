@@ -41,6 +41,7 @@ with s:
     if os.name == 'nt':
         try:
             # Note: this line will show an error on *nix machines, can be safely ignored
+            subprocess.run(["dos2unix", "create_archive.sh"])
             p = subprocess.Popen(['C:\Program Files\Git\\bin\\bash.exe','-c',"./create_archive.sh"], stdout=subprocess.PIPE)
         except Exception as e:
             print(e)
