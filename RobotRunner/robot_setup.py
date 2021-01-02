@@ -69,10 +69,12 @@ while True:
 
     
     if file_name: #If we received a new file
-        os.system("rm -R RobotCode/")
-        os.mkdir("RobotCode")
-        os.system("tar -xf " + file_name + " -C RobotCode")
+        #Update code
+        os.system("tar -xf " + file_name)
         os.system("rm " + file_name)
+        #Update library
+        os.system("pip install pikitlib --upgrade")
+        logging.log("Upgraded pikitlib")
         process.kill()
         process = subprocess.Popen(["python", path], shell=False)
 

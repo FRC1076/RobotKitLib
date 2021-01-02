@@ -5,6 +5,7 @@ import argparse
 import os
 import subprocess
 import socket
+from platform import uname
 def run(robot_class):
     """
     """
@@ -69,10 +70,11 @@ def deploy(h):
         if os.name == 'nt':
             try:
                 # Note: this line will show an error on *nix machines, can be safely ignored
+                
                 p = subprocess.Popen(['C:\Program Files\Git\\bin\\bash.exe','-c',cmd], stdout=subprocess.PIPE)
             except Exception as e:
                 print(e)
-                print("ERROR: Git Bash not installed")
+                print("do you have git bash installed?")
                 sys.exit()
         else:
             p = subprocess.Popen(["sh", "-c", cmd], stdout=subprocess.PIPE)

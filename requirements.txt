@@ -2,4 +2,3 @@ rpi-ws281x
 pygame
 pynetworktables
 tqdm
-smbus2

@@ -4,10 +4,7 @@ import time
 import math
 import logging
 
-try:
-  import smbus2
-except ModuleNotFoundError:
-  import smbus2 as smbus
+import smbus
 
 
 # ============================================================================
