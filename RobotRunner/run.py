@@ -12,7 +12,7 @@ import threading
 import time
 
 from networktables import NetworkTables
-
+import inspect
 import buffer
 #Robot
 #import robot
@@ -38,10 +38,11 @@ class main():
         
     def tryToSetupCode(self):
         try:
-            from robot import MyRobot
-            self.r = MyRobot()
-            
-            return True
+            import robot
+            for item in inspect.getmembers(robot):
+                if "class" in str(item[1]):
+                    self.r = getattr(robot, item[0])()
+                    return True
         except Exception as e:
             logging.critical("Looks like you dont have any code!")
             logging.critical("Send code with deploy.py")
