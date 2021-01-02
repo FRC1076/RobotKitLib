@@ -3,7 +3,6 @@
 import time
 import math
 import logging
-
 import smbus
 
 
