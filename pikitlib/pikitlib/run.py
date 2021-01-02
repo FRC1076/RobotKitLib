@@ -16,21 +16,20 @@ def run(robot_class):
         sys.exit()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--action", help="deploy or run")
+    parser.add_argument("--action", help="deploy, update")
 
     parser.add_argument("--ip_addr", help="IP address of the server")
     args = parser.parse_args()
     action = args.action
     host = args.ip_addr
 
-    if action == "deploy":
+    if action is not None:
         if args.ip_addr == None:
             print("ERROR: enter ip address with --ip_addr IP_OF_ROBOT")
             sys.exit()
         else:
             deploy(host)
-    elif action == None:
-        pass
+
     
 
         
