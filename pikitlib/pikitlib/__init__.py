@@ -6,3 +6,4 @@ from .speedcontroller import SpeedController
 from .speedcontrollergroup import SpeedControllerGroup
 from .timer import Timer
 from .analoginput import analogInput
+from .ultrasonic import Ultrasonic
