@@ -8,6 +8,8 @@ import os
 import socket
 #General Imports
 import sys
+sys.path.append('../pikitlib')
+
 import threading
 import time
 
