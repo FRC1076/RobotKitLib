@@ -42,8 +42,8 @@ class MyRobot(pikitlib.TimedRobot):
         """
         Configures appropriate robot settings for teleop mode
         """
-        self.left.setInverted(False)
-        self.right.setInverted(False)
+        self.left.setInverted(True)
+        self.right.setInverted(True)
         
     def deadzone(self, val, deadzone):
         if abs(val) < deadzone:
@@ -52,9 +52,9 @@ class MyRobot(pikitlib.TimedRobot):
 
     def teleopPeriodic(self):
         
-        forward = self.driver.getX(LEFT_HAND)
+        forward = self.driver.getY(LEFT_HAND)
         forward = 0.80 * self.deadzone(forward, robotmap.DEADZONE)
-        rotation_value = -0.8 * self.driver.getY(RIGHT_HAND)
+        rotation_value = -0.8 * self.driver.getX(RIGHT_HAND)
         self.myRobot.arcadeDrive(forward,rotation_value)
 
 if __name__ == "__main__":

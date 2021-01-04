@@ -1,6 +1,6 @@
 import sys
 
-if sys.platform == "Linux":
+if sys.platform == "linux":
     # If we are running on a raspberry pi (or any linux os that can install smbus)
     from .xboxcontroller import XboxController
     from .buzzer import IllegalBuzzer
