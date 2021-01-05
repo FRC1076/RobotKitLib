@@ -7,8 +7,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 import robotmap
 
-LEFT_HAND = 1
-RIGHT_HAND = 0
+LEFT_HAND = 0
+RIGHT_HAND = 1
 
 class MyRobot():
     def robotInit(self):
@@ -54,5 +54,15 @@ class MyRobot():
         
         forward = self.driver.getX(LEFT_HAND)
         forward = 0.80 * self.deadzone(forward, robotmap.DEADZONE)
-        rotation_value = -0.8 * self.driver.getY(RIGHT_HAND)
-        self.myRobot.arcadeDrive(forward,rotation_value)
+
+        if self.driver.getAButton():
+            forward = forward * 0.5
+
+        
+        
+        rotation_value = -0.8 * self.driver.getX(RIGHT_HAND)
+        print("Forward: " + str(forward) + " Rotate: " + str(rotation_value))
+        self.myRobot.arcadeDrive(forward, rotation_value)
+
+if __name__ == "__main__":
+    pikitlib.run(MyRobot)
