@@ -40,14 +40,16 @@ with s:
 
     if os.name == 'nt':
         try:
-            # Note: this line will show an error on *nix machines, can be safely ignored
-            subprocess.run(["dos2unix", "create_archive.sh"])
             p = subprocess.Popen(['C:\Program Files\Git\\bin\\bash.exe','-c',"./create_archive.sh"], stdout=subprocess.PIPE)
         except Exception as e:
             print(e)
             print("ERROR: Git Bash not installed")
             sys.exit()
     else:
+        try:
+            os.system("sudo dos2unix robot.py")
+        except Exception as e:
+            print("dos2unix not installed")
         p = subprocess.Popen("./create_archive.sh", stdout=subprocess.PIPE)
     
     out, err = p.communicate()
