@@ -7,8 +7,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 import robotmap
 
-LEFT_HAND = 1
-RIGHT_HAND = 0
+LEFT_HAND = 0
+RIGHT_HAND = 1
 
 class MyRobot(pikitlib.TimedRobot):
     def robotInit(self):
@@ -42,8 +42,8 @@ class MyRobot(pikitlib.TimedRobot):
         """
         Configures appropriate robot settings for teleop mode
         """
-        self.left.setInverted(True)
-        self.right.setInverted(True)
+        self.left.setInverted(False)
+        self.right.setInverted(False)
         
     def deadzone(self, val, deadzone):
         if abs(val) < deadzone:
@@ -54,8 +54,15 @@ class MyRobot(pikitlib.TimedRobot):
         
         forward = self.driver.getY(LEFT_HAND)
         forward = 0.80 * self.deadzone(forward, robotmap.DEADZONE)
+
+        if self.driver.getAButton():
+            forward = forward * 0.5
+
+        
+        
         rotation_value = -0.8 * self.driver.getX(RIGHT_HAND)
-        self.myRobot.arcadeDrive(forward,rotation_value)
+        print("Forward: " + str(forward) + " Rotate: " + str(rotation_value))
+        self.myRobot.arcadeDrive(forward, rotation_value)
 
 if __name__ == "__main__":
     pikitlib.run(MyRobot)
