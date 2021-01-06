@@ -9,7 +9,7 @@ import socket
 #General Imports
 import sys
 sys.path.append('../pikitlib')
-
+import hashlib
 import threading
 import time
 
@@ -88,13 +88,29 @@ class main():
         socketHandler = logging.handlers.SocketHandler(self.connectedIP,logging.handlers.DEFAULT_TCP_LOGGING_PORT)
         
         rootLogger.addHandler(socketHandler)
+
+    
+    def md5(self, fname):
+        hash_md5 = hashlib.md5()
+        with open(fname, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        return hash_md5.hexdigest()
         
+    def getChecksumOfDir(self, path):
+        checksums = []
+        for filename in os.listdir(path):
+            checksums.append(self.md5(path + filename))
+        return checksums
+
     def start(self):
         self.isRunning = True
         self.r.robotInit()
         self.setupBatteryLogger()
         self.status_nt.putBoolean("Code", True)
 
+        self.checksum = self.getChecksumOfDir("/home/eli/Robotics/RobotKitLib/RobotKitLib/RobotCode/")
+        self.status_nt.putStringArray(self.checksum, "None")
         self.stop_threads = False
         self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, ))
         self.rl.start() 
