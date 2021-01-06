@@ -104,7 +104,7 @@ while loopQuit == False:
     tryToSetupJoystick()
 
 
-    for item in status_nt.getStringArray(("Checksum", [])):
+    for item in status_nt.getStringArray("Checksum", []):
         print(item)
     
     hasCode = status_nt.getBoolean(("Code"), False)
