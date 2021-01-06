@@ -110,7 +110,7 @@ class main():
         self.status_nt.putBoolean("Code", True)
 
         self.checksum = self.getChecksumOfDir("/home/eli/Robotics/RobotKitLib/RobotKitLib/RobotCode/")
-        self.status_nt.putStringArray(self.checksum, "None")
+        self.status_nt.putStringArray("Checksum", self.checksum)
         self.stop_threads = False
         self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, ))
         self.rl.start() 
