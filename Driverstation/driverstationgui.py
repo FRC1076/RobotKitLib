@@ -23,7 +23,10 @@ class RectItem():
     def select(self):
         self.selected = True
         self.color = (0, 180, 0)
-   
+
+    def setColor(self, newColor):
+        self.color = newColor
+
     def unselect(self):
         self.selected = False
         self.color = (0, 255, 0)
@@ -158,11 +161,19 @@ class DriverstationGUI():
     def getCurrentEvents(self):
         return pygame.event.get()
 
-    def updateChecksum(self, loc, value):
+    def updateChecksum(self, loc, value, indicator):
         if loc == "l":
             self.localChecksumIndicator.setText(value)
         else:
             self.remoteChecksumIndicator.setText(value)
+
+        if indicator:
+            self.localChecksumIndicator.setColor(self.G)
+            self.remoteChecksumIndicator.setColor(self.G)
+        else:
+            self.localChecksumIndicator.setColor(self.R)
+            self.remoteChecksumIndicator.setColor(self.R)
+
 
     def getPos(self):
         return pygame.mouse.get_pos()
