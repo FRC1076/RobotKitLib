@@ -93,6 +93,8 @@ def deploy(h):
         with open(file_name, 'rb') as f:
             sbuf.put_bytes(f.read())
 
+        os.system("rm RobotCode.tar.gz")
+
         print('File Sent')
 
     
