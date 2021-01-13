@@ -99,8 +99,11 @@ class main():
         
     def getChecksumOfDir(self, path):
         checksums = []
+        
         for filename in os.listdir(path):
-            checksums.append(self.md5(path + filename))
+            file_path = path + filename
+            if os.path.isfile(file_path):
+                checksums.append(md5(file_path))
         return checksums
 
     def start(self):
@@ -110,7 +113,7 @@ class main():
         time.sleep(0.1)
         self.status_nt.putBoolean("Code", True)
 
-        self.checksum = self.getChecksumOfDir("/home/pi/RobotKitLib/RobotRunner/RobotCode")
+        self.checksum = self.getChecksumOfDir("/home/pi/RobotKitLib/RobotRunner/RobotCode/")
         self.status_nt.putStringArray("Checksum", self.checksum)
         self.stop_threads = False
         self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, ))
