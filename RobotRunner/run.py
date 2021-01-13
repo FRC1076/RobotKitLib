@@ -40,6 +40,7 @@ class main():
         
     def tryToSetupCode(self):
         try:
+            sys.path.insert(1, 'RobotCode')   
             import robot
             for item in inspect.getmembers(robot):
                 if "class" in str(item[1]):
@@ -96,14 +97,12 @@ class main():
             for chunk in iter(lambda: f.read(4096), b""):
                 hash_md5.update(chunk)
         return hash_md5.hexdigest()
-        
+
     def getChecksumOfDir(self, path):
         checksums = []
-        
         for filename in os.listdir(path):
-            file_path = path + filename
-            if os.path.isfile(file_path):
-                checksums.append(md5(file_path))
+            if os.path.isfile(path + filename):
+                checksums.append(self.md5(path + filename))
         return checksums
 
     def start(self):
