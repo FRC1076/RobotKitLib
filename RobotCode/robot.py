@@ -7,8 +7,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 import robotmap
 
-LEFT_HAND = 0
-RIGHT_HAND = 1
+LEFT_HAND = 1
+RIGHT_HAND = 0
 
 class MyRobot(pikitlib.TimedRobot):
     def robotInit(self):

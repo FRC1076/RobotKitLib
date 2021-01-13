@@ -107,9 +107,10 @@ class main():
         self.isRunning = True
         self.r.robotInit()
         self.setupBatteryLogger()
+        time.sleep(0.1)
         self.status_nt.putBoolean("Code", True)
 
-        self.checksum = self.getChecksumOfDir("/home/pi/RobotKitLib/RobotCode/")
+        self.checksum = self.getChecksumOfDir("/home/pi/RobotKitLib/RobotRunner/RobotCode")
         self.status_nt.putStringArray("Checksum", self.checksum)
         self.stop_threads = False
         self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, ))
