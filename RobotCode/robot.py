@@ -7,8 +7,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 import robotmap
 
-LEFT_HAND = 1
-RIGHT_HAND = 0
+LEFT_HAND = 0
+RIGHT_HAND = 1
 
 class MyRobot(pikitlib.TimedRobot):
     def robotInit(self):
@@ -23,7 +23,7 @@ class MyRobot(pikitlib.TimedRobot):
         self.right = pikitlib.SpeedControllerGroup(self.rightBackMotor, self.rightFrontMotor )
 
         self.myRobot = pikitlib.DifferentialDrive(self.left, self.right)
-       # self.myRobot.setExpiration(0.1)
+        # self.myRobot.setExpiration(0.1)
 
         self.DEADZONE = 0.4
 
@@ -42,8 +42,8 @@ class MyRobot(pikitlib.TimedRobot):
         """
         Configures appropriate robot settings for teleop mode
         """
-        self.left.setInverted(True)
-        self.right.setInverted(True)
+        self.left.setInverted(False)
+        self.right.setInverted(False)
         
     def deadzone(self, val, deadzone):
         if abs(val) < deadzone:
