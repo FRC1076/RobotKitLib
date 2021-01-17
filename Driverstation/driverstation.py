@@ -102,7 +102,7 @@ def getChecksumOfDir(path):
         file_path = path + filename
         if os.path.isfile(file_path):
             checksums.append(md5(file_path))
-    return checksums
+    return sorted(checksums)
 #connect()
 
 print("starting")

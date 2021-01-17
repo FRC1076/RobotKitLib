@@ -103,7 +103,7 @@ class main():
         for filename in os.listdir(path):
             if os.path.isfile(path + filename):
                 checksums.append(self.md5(path + filename))
-        return checksums
+        return sorted(checksums)
 
     def start(self):
         self.isRunning = True
