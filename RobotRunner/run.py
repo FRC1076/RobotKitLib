@@ -48,7 +48,7 @@ class main():
                     return True
         except Exception as e:
             logging.critical("Looks like you dont have any code!")
-            logging.critical("Send code with deploy.py")
+            logging.critical("Send code with 'python robot.py --action deploy --ip_addr IP'")
             self.catchErrorAndLog(e, False)
             return False
         
