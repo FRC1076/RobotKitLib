@@ -27,16 +27,21 @@ class MyRobot(pikitlib.TimedRobot):
 
         self.DEADZONE = 0.4
 
-        #self.buzz = pikitlib.IllegalBuzzer()
+        #self.buzz = pikitlib.IllegalBuzzer(17)
 
         NetworkTables.initialize()
         self.driver = pikitlib.XboxController(0)
 
     def autonomousInit(self):
-        self.myRobot.tankDrive(0.8, 0.8)
+        self.auton_timer = pikitlib.Timer()
+        self.auton_timer.start()
 
     def autonomousPeriodic(self):
-        self.myRobot.tankDrive(1, 0.5)
+        print(self.auton_timer.get())
+        if self.auton_timer.get() <= 3.0:
+            self.myRobot.arcadeDrive(0.7, 0)
+        else:
+            self.myRobot.arcadeDrive(0, 0)
 
     def teleopInit(self):
         """
