@@ -18,7 +18,7 @@ class DifferentialDrive(RobotDriveBase):
 
         self.left = left
         self.right = right
-        self.rightSideInvertMultiplier = -1.0
+        self.rightSideInvertMultiplier = 1.0
         self.deadband = 0.02
         self.maxOutput = 1
 

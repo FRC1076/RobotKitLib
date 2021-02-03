@@ -40,6 +40,7 @@ class main():
         
     def tryToSetupCode(self):
         try:
+            sys.path.insert(1, 'RobotCode')   
             import robot
             for item in inspect.getmembers(robot):
                 if "class" in str(item[1]):
@@ -47,7 +48,7 @@ class main():
                     return True
         except Exception as e:
             logging.critical("Looks like you dont have any code!")
-            logging.critical("Send code with deploy.py")
+            logging.critical("Send code with 'python robot.py --action deploy --ip_addr IP'")
             self.catchErrorAndLog(e, False)
             return False
         
@@ -106,20 +107,22 @@ class main():
             for chunk in iter(lambda: f.read(4096), b""):
                 hash_md5.update(chunk)
         return hash_md5.hexdigest()
-        
+
     def getChecksumOfDir(self, path):
         checksums = []
         for filename in os.listdir(path):
-            checksums.append(self.md5(path + filename))
-        return checksums
+            if os.path.isfile(path + filename):
+                checksums.append(self.md5(path + filename))
+        return sorted(checksums)
 
     def start(self):
         self.isRunning = True
         self.r.robotInit()
         self.setupBatteryLogger()
+        time.sleep(0.1)
         self.status_nt.putBoolean("Code", True)
 
-        self.checksum = self.getChecksumOfDir("/home/pi/RobotKitLib/RobotCode/")
+        self.checksum = self.getChecksumOfDir("/home/pi/RobotKitLib/RobotRunner/RobotCode/")
         self.status_nt.putStringArray("Checksum", self.checksum)
         self.stop_threads = False
         self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, ))

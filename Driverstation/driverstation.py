@@ -97,9 +97,12 @@ def md5(fname):
     
 def getChecksumOfDir(path):
     checksums = []
+    
     for filename in os.listdir(path):
-        checksums.append(md5(path + filename))
-    return checksums
+        file_path = path + filename
+        if os.path.isfile(file_path):
+            checksums.append(md5(file_path))
+    return sorted(checksums)
 #connect()
 
 print("starting")
