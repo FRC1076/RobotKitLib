@@ -1,6 +1,6 @@
-import sys
+import os
 
-if sys.platform == "linux":
+if os.path.isdir('/home/pi')
     # If we are running on a raspberry pi (or any linux os that can install smbus)
     from .xboxcontroller import XboxController
     from .buzzer import IllegalBuzzer
