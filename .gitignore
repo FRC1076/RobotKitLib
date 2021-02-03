@@ -10,6 +10,7 @@ pikitlib/build
 pikitlib/dist
 pikitlib/pikitlib.egg_info/
 pikitlib/.pypirc
+*.tar.gz
 
 
 # C extensions

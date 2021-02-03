@@ -12,12 +12,18 @@ import ctypes
 import logging
 import socket
 import tqdm
+import hashlib
+import pathlib
 import os
 import argparse
 
 import driverstationgui
 
 def quit():
+    try:
+        lg._stop()
+    except AssertionError:
+        pass
     mode_nt.putBoolean("Disabled", True)
     pygame.quit()
     sys.exit()
@@ -36,7 +42,6 @@ NetworkTables.initialize(ip)
 s = ""
 GUI = driverstationgui.DriverstationGUI()
 GUI.setup() 
-
 
 
 hasCommunication = False
@@ -83,7 +88,21 @@ lg.start()
 mode = ""
 disabled = True
 connected = False
-
+def md5(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+    
+def getChecksumOfDir(path):
+    checksums = []
+    
+    for filename in os.listdir(path):
+        file_path = path + filename
+        if os.path.isfile(file_path):
+            checksums.append(md5(file_path))
+    return sorted(checksums)
 #connect()
 
 print("starting")
@@ -92,21 +111,25 @@ loopQuit = False
 a = time.perf_counter()
 b = time.perf_counter()
 while loopQuit == False:
-
-    """
-    TODO: Check if values are different for windows/linux
-    TODO: Update only when there is an update event
-
-    Look at the documentation for NetworkTables for some ideas.
-         https://robotpy.readthedocs.io/projects/pynetworktables/en/latest/examples.html
-    """
-
     tryToSetupJoystick()
 
 
-
+    remote_checksum =  status_nt.getStringArray("Checksum", [])
+    local_path = str(pathlib.Path(__file__).parent.absolute())
+    local_path = local_path[:len(local_path)-len("Driverstation")]
+    local_checksum  =  getChecksumOfDir(local_path + "/RobotCode/") 
     
+    rc = lc = ""
+    for i in local_checksum: lc += i[:2]
+    for i in remote_checksum: rc += i[:2]
+
+    files_identical = True if rc == lc else False
+    
+    GUI.updateChecksum("l", lc, files_identical)
+    GUI.updateChecksum("r", rc, files_identical)
+
     hasCode = status_nt.getBoolean(("Code"), False)
+
 
 
     if hasCommunication and hasJoysticks and hasCode:
@@ -134,11 +157,6 @@ while loopQuit == False:
     GUI.updateIndicator(1, hasCode)
     GUI.updateIndicator(2, hasJoysticks)
     
-    
-
-
-    # {"action": "Enable", "value": False}
-    # {"action": "Mode", "value": "Auton"}
     btn = GUI.getButtonPressed()
 
     if btn["action"] == "Enable":
@@ -151,12 +169,6 @@ while loopQuit == False:
         loopQuit = True
     elif btn["action"] == "ESTOP":
         mode_nt.putString("ESTOP", True)
-    #elif btn["action"] == "Code":
-        #if hasCommunication:
-    #    sendRobotCode(NetworkTables.getRemoteAddress())
-        #else:
-        #    logging.warning("Cant send code, no connection!")
-    
     
     if hasCommunication and hasCode:
         mode_nt.putBoolean("Disabled", disabled)

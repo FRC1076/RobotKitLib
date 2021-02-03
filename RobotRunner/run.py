@@ -8,11 +8,13 @@ import os
 import socket
 #General Imports
 import sys
+sys.path.append('../pikitlib')
+import hashlib
 import threading
 import time
 
 from networktables import NetworkTables
-
+import inspect
 import buffer
 #Robot
 #import robot
@@ -30,7 +32,7 @@ class main():
         self.current_mode = ""
         self.disabled = True
         
-        
+
         self.timer = pikitlib.Timer()
         self.connectedIP = None
         self.isRunning = False
@@ -38,14 +40,16 @@ class main():
         
     def tryToSetupCode(self):
         try:
-            from RobotCode.pikitlib.robot import MyRobot
-            self.r = MyRobot()
-            
-            return True
+            sys.path.insert(1, 'RobotCode')   
+            import robot
+            for item in inspect.getmembers(robot):
+                if "class" in str(item[1]):
+                    self.r = getattr(robot, item[0])()
+                    return True
         except Exception as e:
             logging.critical("Looks like you dont have any code!")
-            logging.critical("Send code with deploy.py")
-            self.catchErrorAndLog(e)
+            logging.critical("Send code with 'python robot.py --action deploy --ip_addr IP'")
+            self.catchErrorAndLog(e, False)
             return False
         
         
@@ -76,8 +80,18 @@ class main():
             self.setupMode(value)
         if(key == "Disabled"):
             self.disabled = value
+            if not value:
+                self.initMode(self.current_mode)
+
         if(key == "ESTOP"):
             self.quit()
+
+    def initMode(self, m):
+        # Initializes current mode\
+        if m == "Teleop":
+            self.r.teleopInit()
+        elif m == "Auton":
+            self.r.autonomousInit()
 
     def setupLogging(self):
         rootLogger = logging.getLogger('')
@@ -85,13 +99,31 @@ class main():
         socketHandler = logging.handlers.SocketHandler(self.connectedIP,logging.handlers.DEFAULT_TCP_LOGGING_PORT)
         
         rootLogger.addHandler(socketHandler)
-        
+
+    
+    def md5(self, fname):
+        hash_md5 = hashlib.md5()
+        with open(fname, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        return hash_md5.hexdigest()
+
+    def getChecksumOfDir(self, path):
+        checksums = []
+        for filename in os.listdir(path):
+            if os.path.isfile(path + filename):
+                checksums.append(self.md5(path + filename))
+        return sorted(checksums)
+
     def start(self):
         self.isRunning = True
         self.r.robotInit()
         self.setupBatteryLogger()
+        time.sleep(0.1)
         self.status_nt.putBoolean("Code", True)
 
+        self.checksum = self.getChecksumOfDir("/home/pi/RobotKitLib/RobotRunner/RobotCode/")
+        self.status_nt.putStringArray("Checksum", self.checksum)
         self.stop_threads = False
         self.rl = threading.Thread(target = self.robotLoop, args =(lambda : self.stop_threads, ))
         self.rl.start() 
@@ -110,10 +142,10 @@ class main():
         Run the init function for the current mode
         """
         
-        if m == "Teleop":
-            self.r.teleopInit()
-        elif m == "Auton":
-            self.r.autonomousInit()
+        #if m == "Teleop":
+        #    self.r.teleopInit()
+        #elif m == "Auton":
+        #    self.r.autonomousInit()
 
         self.current_mode = m
 
@@ -146,11 +178,12 @@ class main():
         self.disable()
         sys.exit()
 
-    def catchErrorAndLog(self, err):
-        logging.critical("Competition robot should not quit, but yours did!")
-        logging.critical(err)
+    def catchErrorAndLog(self, err, logErr=True):
+        if logErr:
+            logging.critical("Competition robot should not quit, but yours did!")
+            logging.critical(err)
         
-    
+
         try:
             self.broadcastNoCode()
         except AttributeError:

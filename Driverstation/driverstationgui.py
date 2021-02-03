@@ -23,7 +23,10 @@ class RectItem():
     def select(self):
         self.selected = True
         self.color = (0, 180, 0)
-   
+
+    def setColor(self, newColor):
+        self.color = newColor
+
     def unselect(self):
         self.selected = False
         self.color = (0, 255, 0)
@@ -112,12 +115,16 @@ class DriverstationGUI():
         self.commText        = RectItem(self.W,380,110, 100,  20, "Communication", 20, outline=1) #Is the robot connected?
         self.robotCodeText   = RectItem(self.W,380,130, 100,  20, "Robot Code", 20, outline=1)  #Is there code on the robot? (TODO)
         self.joystickText    = RectItem(self.W,380,150, 100,  20, "Joysticks", 20, outline=1) 
-        
+        self.lCText          = RectItem(self.W,380,170, 100,  20, "Local cs", 20, outline=1) 
+        self.rCText          = RectItem(self.W,380,190, 100,  20, "Remote cs", 20, outline=1) 
         
         self.commIndicator   = rectIndicator(self.R,480,110,40,18)
         self.codeIndicator   = rectIndicator(self.R,480,130,40,18)
         self.joyIndicator    = rectIndicator(self.R,480,150,40,18)
-
+        self.localChecksumIndicator = RectItem(self.G, 480, 170, 80, 18, text="checksum", fontSize=20)
+        self.remoteChecksumIndicator = RectItem(self.G, 480, 190, 80, 18, text="checksum", fontSize=20)
+        
+        
         self.indicators = [self.commIndicator, self.codeIndicator, self.joyIndicator]
 
         self.control_buttons = [self.testButton,self.practiceButton,
@@ -129,7 +136,8 @@ class DriverstationGUI():
         self.pygame_buttons  = self.enable_buttons + self.control_buttons
         self.texts = [self.descriptionText, self.batteryVal, self.batteryText, self.commText,
                       self.robotCodeText, self.joystickText, self.joyIndicator, self.codeIndicator,
-                      self.commIndicator]
+                      self.commIndicator, self.localChecksumIndicator, self.remoteChecksumIndicator,
+                      self.lCText, self.rCText]
     
 
 
@@ -152,6 +160,20 @@ class DriverstationGUI():
 
     def getCurrentEvents(self):
         return pygame.event.get()
+
+    def updateChecksum(self, loc, value, indicator):
+        if loc == "l":
+            self.localChecksumIndicator.setText(value)
+        else:
+            self.remoteChecksumIndicator.setText(value)
+
+        if indicator:
+            self.localChecksumIndicator.setColor(self.G)
+            self.remoteChecksumIndicator.setColor(self.G)
+        else:
+            self.localChecksumIndicator.setColor(self.R)
+            self.remoteChecksumIndicator.setColor(self.R)
+
 
     def getPos(self):
         return pygame.mouse.get_pos()

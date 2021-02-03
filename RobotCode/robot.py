@@ -10,7 +10,7 @@ import robotmap
 LEFT_HAND = 0
 RIGHT_HAND = 1
 
-class MyRobot():
+class MyRobot(pikitlib.TimedRobot):
     def robotInit(self):
         """Robot initialization function"""
         # object that handles basic drive operations
@@ -23,7 +23,7 @@ class MyRobot():
         self.right = pikitlib.SpeedControllerGroup(self.rightBackMotor, self.rightFrontMotor )
 
         self.myRobot = pikitlib.DifferentialDrive(self.left, self.right)
-       # self.myRobot.setExpiration(0.1)
+        # self.myRobot.setExpiration(0.1)
 
         self.DEADZONE = 0.4
 
@@ -33,10 +33,24 @@ class MyRobot():
         self.driver = pikitlib.XboxController(0)
 
     def autonomousInit(self):
-        self.myRobot.tankDrive(0.8, 0.8)
+        self.timer = pikitlib.Timer()
+        self.timer.start()
+
 
     def autonomousPeriodic(self):
-        self.myRobot.tankDrive(1, 0.5)
+        print(self.timer.get())
+        if self.timer.get() < 2.0:
+            self.myRobot.arcadeDrive(0.6, 0)
+        elif self.timer.get() < 3.0:
+            self.myRobot.arcadeDrive(0, 0.8)
+        elif self.timer.get() < 4.0:
+            self.myRobot.arcadeDrive(-0.7, 0)
+        elif self.timer.get() < 7.0:
+            self.myRobot.arcadeDrive(0, -0.8)
+        else:
+            self.myRobot.arcadeDrive(0,0)
+
+
 
     def teleopInit(self):
         """
@@ -52,7 +66,7 @@ class MyRobot():
 
     def teleopPeriodic(self):
         
-        forward = self.driver.getX(LEFT_HAND)
+        forward = self.driver.getY(LEFT_HAND)
         forward = 0.80 * self.deadzone(forward, robotmap.DEADZONE)
 
         if self.driver.getAButton():
@@ -66,3 +80,4 @@ class MyRobot():
 
 if __name__ == "__main__":
     pikitlib.run(MyRobot)
+
