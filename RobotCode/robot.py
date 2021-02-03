@@ -33,10 +33,24 @@ class MyRobot(pikitlib.TimedRobot):
         self.driver = pikitlib.XboxController(0)
 
     def autonomousInit(self):
-        self.myRobot.tankDrive(0.8, 0.8)
+        self.timer = pikitlib.Timer()
+        self.timer.start()
+
 
     def autonomousPeriodic(self):
-        self.myRobot.tankDrive(1, 0.5)
+        print(self.timer.get())
+        if self.timer.get() < 2.0:
+            self.myRobot.arcadeDrive(0.6, 0)
+        elif self.timer.get() < 3.0:
+            self.myRobot.arcadeDrive(0, 0.8)
+        elif self.timer.get() < 4.0:
+            self.myRobot.arcadeDrive(-0.7, 0)
+        elif self.timer.get() < 7.0:
+            self.myRobot.arcadeDrive(0, -0.8)
+        else:
+            self.myRobot.arcadeDrive(0,0)
+
+
 
     def teleopInit(self):
         """
