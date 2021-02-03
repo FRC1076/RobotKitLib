@@ -40,12 +40,19 @@ class main():
         
     def tryToSetupCode(self):
         try:
+<<<<<<< HEAD:RobotRunner/run.py
             sys.path.insert(1, 'RobotCode')   
             import robot
             for item in inspect.getmembers(robot):
                 if "class" in str(item[1]):
                     self.r = getattr(robot, item[0])()
                     return True
+=======
+            from RobotCode.pikitlib.robot import MyRobot
+            self.r = MyRobot()
+            
+            return True
+>>>>>>> main:pikitlib/run.py
         except Exception as e:
             logging.critical("Looks like you dont have any code!")
             logging.critical("Send code with 'python robot.py --action deploy --ip_addr IP'")

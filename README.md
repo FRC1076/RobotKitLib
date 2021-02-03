@@ -29,6 +29,7 @@ Setup:
 Clone the repo both on your local machine and the robot's raspberry pi. 
 Install requirements.txt with pip on both your local machine and on the robot
 On the raspberry pi, enable SSH and GPIO
+On the raspberry pi, run `setup_autorunner.sh` to allow the robot to run on boot
 
 Usage:
 
