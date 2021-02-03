@@ -32,7 +32,7 @@ class main():
         self.current_mode = ""
         self.disabled = True
         
-        
+
         self.timer = pikitlib.Timer()
         self.connectedIP = None
         self.isRunning = False
@@ -79,8 +79,18 @@ class main():
             self.setupMode(value)
         if(key == "Disabled"):
             self.disabled = value
+            if not value:
+                self.initMode(self.current_mode)
+
         if(key == "ESTOP"):
             self.quit()
+
+    def initMode(self, m):
+        # Initializes current mode\
+        if m == "Teleop":
+            self.r.teleopInit()
+        elif m == "Auton":
+            self.r.autonomousInit()
 
     def setupLogging(self):
         rootLogger = logging.getLogger('')
@@ -129,10 +139,10 @@ class main():
         Run the init function for the current mode
         """
         
-        if m == "Teleop":
-            self.r.teleopInit()
-        elif m == "Auton":
-            self.r.autonomousInit()
+        #if m == "Teleop":
+        #    self.r.teleopInit()
+        #elif m == "Auton":
+        #    self.r.autonomousInit()
 
         self.current_mode = m
 
