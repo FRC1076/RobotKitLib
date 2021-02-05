@@ -45,7 +45,7 @@ GUI.setup()
 
 
 hasCommunication = False
-hasCode = False #TODO: make some way to check for this
+hasCode = False 
 hasJoysticks = False
 
 global joystick
@@ -84,6 +84,8 @@ lg = threading.Thread(target=logreceiver.main)
 lg.daemon = True
 lg.start()
 
+xbc_nt.putBooleanArray("Buttons", buttons)
+xbc_nt.putNumberArray("Axis", list(axis_values))
 
 mode = ""
 disabled = True
@@ -123,7 +125,7 @@ while loopQuit == False:
     for i in local_checksum: lc += i[:2]
     for i in remote_checksum: rc += i[:2]
 
-    files_identical = True if rc == lc else False
+    files_identical = rc == lc
     
     GUI.updateChecksum("l", lc, files_identical)
     GUI.updateChecksum("r", rc, files_identical)
