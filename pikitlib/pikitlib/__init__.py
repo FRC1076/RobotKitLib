@@ -1,6 +1,6 @@
 import os
 
-if os.path.isdir('/home/pi')
+if os.path.isdir('/home/pi'):
     # If we are running on a raspberry pi (or any linux os that can install smbus)
     from .xboxcontroller import XboxController
     from .buzzer import IllegalBuzzer
@@ -9,6 +9,7 @@ if os.path.isdir('/home/pi')
     from .speedcontroller import SpeedController
     from .speedcontrollergroup import SpeedControllerGroup
     from .analoginput import analogInput
+    from .ultrasonic import Ultrasonic
     from .timer import Timer
 from .timedrobot import TimedRobot
 from .iterativerobotbase import IterativeRobotBase
