@@ -18,17 +18,16 @@ class Ultrasonic:
 
         self.range = None
         self.stop_threads = False
-        self.t = threading.Thread(target=updateRange, args =(lambda : self.stop_threads, ))
+        
+    
+    def startUltrasonic(self):
+        self.t = threading.Thread(target=self.updateRange, args =(lambda : self.stop_threads, ))
+        self.t.start()
 
 
     def updateRange(self, stop):
-        t = pikitlib.Timer() 
-        t.start()
-        while not stop():
-            if t.get() > 0.2:
-                v = self.getRangeInches()
-                self.range = v
-                t.reset()
+        self.range = self.getRangeInches()
+                
 
     def get(self):
         return self.range
@@ -41,7 +40,7 @@ class Ultrasonic:
         chirpLen = self.chirpLen
         GPIO.output(self.pPin,True)
         time.sleep(chirpLen) 
-        GPIO.output(self.trigger_pin,False)
+        GPIO.output(self.pPin,False)
 
     def waitForEcho(self,value,timeout):
         count = timeout

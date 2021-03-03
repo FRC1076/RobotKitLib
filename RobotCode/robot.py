@@ -28,9 +28,12 @@ class MyRobot(pikitlib.TimedRobot):
         self.DEADZONE = 0.4
 
         #self.buzz = pikitlib.IllegalBuzzer()
+        self.us = pikitlib.Ultrasonic()
 
         NetworkTables.initialize()
         self.driver = pikitlib.XboxController(0)
+
+        self.us.startUltrasonic()
 
     def autonomousInit(self):
         self.timer = pikitlib.Timer()
@@ -38,6 +41,7 @@ class MyRobot(pikitlib.TimedRobot):
 
 
     def autonomousPeriodic(self):
+        print(self.us.get())
         print(self.timer.get())
         if self.timer.get() < 2.0:
             self.myRobot.arcadeDrive(0.6, 0)
