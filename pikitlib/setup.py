@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name='pikitlib',
     packages=find_packages(),
-    version='0.0.19',
+    version='0.0.20',
     description='WPILIb-equivilent for 1076 robot kits',
     author='1076',
     license='None',

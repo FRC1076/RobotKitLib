@@ -34,8 +34,6 @@ class MyRobot(pikitlib.TimedRobot):
         NetworkTables.initialize()
         self.driver = pikitlib.XboxController(0)
 
-        self.us.startUltrasonic()
-
     def autonomousInit(self):
         self.timer = pikitlib.Timer()
         self.timer.start()
