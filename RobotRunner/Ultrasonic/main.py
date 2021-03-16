@@ -5,7 +5,7 @@ import socket
 import time
 import pikitlib
 
-u = ultrasonic()
+u = ultrasonic.Ultrasonic()
 s = socket.socket()
 host = 'localhost'
 port = 1235
