@@ -12,7 +12,7 @@ class Ultrasonic:
     def connect():
         host = 'localhost'
         port = 1235
-        self.s.bind((host,port))
+        self.s.bind(('',port))
         self.s.listen(5)
         sc, addr = self.s.accept()
 
