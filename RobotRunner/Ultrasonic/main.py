@@ -16,3 +16,6 @@ starttime = time.time()
 while True:
     val = u.getRangeInches()
     time.sleep(2 - ((time.time() - starttime) % 2))
+    s.send(val.encode("utf-8"))
+
+s.close()
