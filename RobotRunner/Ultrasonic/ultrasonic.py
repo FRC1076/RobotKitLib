@@ -3,7 +3,7 @@ import time
 import statistics
 import pikitlib
 
-class Ultrasonic:
+class Ultrasonic():
     def __init__(self, pingChannel = 27, echoChannel = 22):
         GPIO.setwarnings(False)
 
