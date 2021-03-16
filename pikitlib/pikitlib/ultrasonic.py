@@ -6,15 +6,20 @@ class Ultrasonic:
         self.pPin = pingChannel
         self.ePin = echoChannel  
         self.chirpLen = 0.00015
+        self.s = socket.socket()
+        
 
-  
-    def getRangeInches(self):
-        s = socket.socket()
+    def connect():
         host = 'localhost'
         port = 1235
-        s.bind((host,port))
-        s.listen(5)
-        sc, addr = s.accept()
+        self.s.bind((host,port))
+        self.s.listen(5)
+        sc, addr = self.s.accept()
+
+    def getRangeInches(self):
+        
+        
+        
         print("received info")
         message = socketclient.recv(1024)
         message = message.decode("utf-8")

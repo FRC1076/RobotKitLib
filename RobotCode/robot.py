@@ -29,6 +29,7 @@ class MyRobot(pikitlib.TimedRobot):
 
         #self.buzz = pikitlib.IllegalBuzzer()
         self.us = pikitlib.Ultrasonic()
+        self.us.connect()
 
         NetworkTables.initialize()
         self.driver = pikitlib.XboxController(0)
